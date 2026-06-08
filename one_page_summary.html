@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>One Page Report - Minecraft Best Practice</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    /* Minecraft Inventory & Creative UI Theme (Light Print-Friendly Edition) */
+    :root {
+      --mc-border-light: #ffffff;
+      --mc-border-dark: #555555;
+      --mc-gui-bg: #c6c6c6;
+      --mc-panel-bg: #dbdbdb;
+      --mc-green: #5c8e32;
+      --mc-green-light: #7faa43;
+      --mc-gold: #fdb813;
+      --mc-diamond: #3cc2b2;
+      --mc-redstone: #b31f1f;
+      --mc-wood: #705030;
+      
+      --text-dark: #212121;
+      --text-dim: #555555;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      font-family: 'Prompt', sans-serif;
+      color: var(--text-dark);
+      background-color: #e0e0e0;
+      line-height: 1.35;
+      font-size: 12.5px; /* Increased from 11px */
+    }
+
+    /* A4 Portrait Size styling */
+    .a4-page {
+      width: 210mm;
+      height: 297mm;
+      padding: 10mm 12mm;
+      margin: 0 auto;
+      background: var(--mc-gui-bg);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 4px solid var(--mc-border-dark);
+      box-shadow: inset -4px -4px 0px #3c3c3c, inset 4px 4px 0px #ffffff;
+      box-sizing: border-box;
+    }
+
+    /* Minecraft style header */
+    header {
+      border: 3px solid var(--mc-border-dark);
+      background: #4e4e4e;
+      color: #ffffff;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: inset -3px -3px 0px #2a2a2a, inset 3px 3px 0px #888888;
+    }
+
+    .header-logo {
+      font-size: 28px;
+    }
+
+    .header-text {
+      flex: 1;
+      margin-left: 10px;
+    }
+
+    .tagline {
+      font-family: 'VT323', monospace;
+      font-size: 13px; /* Increased from 11px */
+      color: var(--mc-gold);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    h1 {
+      font-size: 16px; /* Increased from 13.5px */
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 2px 2px 0px #202020;
+    }
+
+    .meta-info {
+      font-size: 10.5px; /* Increased from 9px */
+      color: #dbdbdb;
+      margin-top: 2px;
+    }
+
+    /* Layout structure */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 9fr 11fr;
+      gap: 12px;
+      flex-grow: 1;
+    }
+
+    /* Minecraft Panel Style (Inset 3D shadow) */
+    .panel {
+      background: var(--mc-panel-bg);
+      border: 3px solid var(--mc-border-dark);
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      position: relative;
+      box-shadow: inset -3px -3px 0px #b2b2b2, inset 3px 3px 0px #ffffff;
+    }
+
+    .panel:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Minecraft Achievement style title banner */
+    .panel-title {
+      font-size: 13px; /* Increased from 11px */
+      font-weight: 700;
+      color: #ffffff;
+      background: #2e7d32;
+      padding: 3px 10px;
+      border: 2px solid var(--mc-border-dark);
+      box-shadow: inset -2px -2px 0px #1b5e20, inset 2px 2px 0px #a5d6a7;
+      margin-bottom: 8px;
+      display: inline-block;
+      text-shadow: 1px 1px 0px #111111;
+    }
+
+    .panel-title.blue {
+      background: #1565c0;
+      box-shadow: inset -2px -2px 0px #0d47a1, inset 2px 2px 0px #90caf9;
+    }
+
+    .panel-title.redstone {
+      background: var(--mc-redstone);
+      box-shadow: inset -2px -2px 0px #5f1010, inset 2px 2px 0px #ef9a9a;
+    }
+
+    /* List items decorated with redstone dust */
+    ul {
+      list-style-type: none;
+    }
+
+    li {
+      margin-bottom: 4px;
+      position: relative;
+      padding-left: 14px;
+      font-size: 11px; /* Increased from 9.5px */
+    }
+
+    li::before {
+      content: "■";
+      color: var(--mc-redstone);
+      font-size: 8px;
+      position: absolute;
+      left: 2px;
+      top: 1px;
+    }
+
+    /* Image Frame with wood item frame styling */
+    .image-frame {
+      width: 100%;
+      height: 90px;
+      background: #8f8f8f;
+      border: 3px solid var(--mc-wood);
+      box-shadow: inset -3px -3px 0px #4a331c, inset 3px 3px 0px #a27c54;
+      position: relative;
+      overflow: hidden;
+      margin: 6px 0;
+    }
+
+    .image-frame img, .gallery-item img, .qr-frame img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 2;
+    }
+
+    .qr-frame img {
+      object-fit: contain;
+    }
+
+    .placeholder-text {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background-color: #8f8f8f;
+      font-size: 8px;
+      color: #e0e0e0;
+      font-weight: 500;
+      z-index: 1;
+      box-sizing: border-box;
+    }
+
+    /* Timeline style */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .timeline-step {
+      display: flex;
+      border-left: 3px solid #8b8b8b;
+      padding-left: 8px;
+      position: relative;
+    }
+
+    .timeline-step::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      background: var(--mc-gold);
+      border: 1px solid var(--mc-border-dark);
+      position: absolute;
+      left: -5px;
+      top: 3px;
+    }
+
+    .step-num {
+      font-family: 'VT323', monospace;
+      font-size: 14px; /* Increased from 12px */
+      font-weight: bold;
+      color: var(--mc-redstone);
+      min-width: 50px;
+    }
+
+    .step-content {
+      font-size: 11px; /* Increased from 9.5px */
+    }
+
+    .step-title {
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .step-desc {
+      color: var(--text-dim);
+      font-size: 10px; /* Increased from 8.5px */
+    }
+
+    /* Minecraft Styled Table */
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 4px;
+      font-size: 11.5px; /* Increased from 9.5px */
+      border: 2px solid var(--mc-border-dark);
+    }
+
+    .results-table th, .results-table td {
+      border: 1px solid var(--mc-border-dark);
+      padding: 4px 6px;
+      text-align: center;
+    }
+
+    .results-table th {
+      background-color: #8f8f8f;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .results-table td {
+      background-color: #ffffff;
+    }
+
+    .results-table td.left-align {
+      text-align: left;
+      font-weight: 500;
+    }
+
+    /* Score summary badges */
+    .stats-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .stat-box {
+      flex: 1;
+      background: #eceff1;
+      border: 2px solid var(--mc-border-dark);
+      padding: 4px;
+      text-align: center;
+      box-shadow: inset -1px -1px 0px #cfd8dc, inset 1px 1px 0px #ffffff;
+    }
+
+    .stat-val {
+      font-family: 'VT323', monospace;
+      font-size: 22px; /* Increased from 18px */
+      font-weight: bold;
+      color: var(--mc-green);
+    }
+
+    .stat-label {
+      font-size: 9.5px; /* Increased from 7.5px */
+      color: var(--text-dim);
+      font-weight: bold;
+    }
+
+    /* Project card */
+    .project-card {
+      background: #eceff1;
+      border: 2px solid var(--mc-border-dark);
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      box-shadow: inset -1px -1px 0px #cfd8dc, inset 1px 1px 0px #ffffff;
+    }
+
+    .project-card:last-child {
+      margin-bottom: 0;
+    }
+
+    .project-name {
+      font-weight: 700;
+      color: var(--mc-wood);
+      font-size: 12px; /* Increased from 10px */
+    }
+
+    .project-desc {
+      font-size: 11px; /* Increased from 8.5px */
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    /* Footer structure */
+    footer {
+      border-top: 3px dashed var(--mc-border-dark);
+      padding-top: 6px;
+      margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 8.5px;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .qr-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .qr-frame {
+      width: 76px; /* Increased from 44px */
+      height: 76px; /* Increased from 44px */
+      background: #ffffff;
+      border: 2px solid var(--mc-border-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .qr-frame span {
+      font-size: 9px;
+      text-align: center;
+      color: #999;
+      font-weight: bold;
+    }
+
+    /* Minecraft Decorative Block Strip */
+    .mc-decor-strip {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin: 8px 0;
+      padding: 4px;
+      background: rgba(0,0,0,0.15);
+      border-radius: 4px;
+      border: 2px solid var(--mc-border-dark);
+      box-shadow: inset -2px -2px 0px #b2b2b2, inset 2px 2px 0px #ffffff;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .mc-decor-block {
+      width: 20px;
+      height: 20px;
+      position: relative;
+      display: inline-block;
+      box-shadow: inset -2px -2px 0px rgba(0,0,0,0.4), inset 2px 2px 0px rgba(255,255,255,0.4);
+      border: 1px solid #111;
+    }
+    
+    .mc-decor-block.grass { background: var(--mc-green); border-top: 4px solid var(--mc-green-light); }
+    .mc-decor-block.dirt { background: #8b6914; }
+    .mc-decor-block.stone { background: #7f7f7f; }
+    .mc-decor-block.diamond { background: var(--mc-diamond); }
+    .mc-decor-block.redstone { background: var(--mc-redstone); }
+    .mc-decor-block.gold { background: var(--mc-gold); }
+    .mc-decor-block.emerald { background: #17dd62; }
+    .mc-decor-block.obsidian { background: #1B1028; }
+
+    /* CSS Pixel Art Steve Head */
+    .steve-head-wrapper {
+      width: 28px;
+      height: 28px;
+      position: relative;
+      background: #d1a07e;
+      border: 2px solid var(--mc-border-dark);
+      box-shadow: inset -2px -2px 0px rgba(0,0,0,0.4), inset 2px 2px 0px rgba(255,255,255,0.4);
+      overflow: hidden;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
+    .steve-css-head {
+      width: 3.5px;
+      height: 3.5px;
+      background: transparent;
+      position: absolute;
+      top: -3.5px;
+      left: -3.5px;
+      box-shadow:
+        3.5px 3.5px #4a331c, 7px 3.5px #4a331c, 10.5px 3.5px #4a331c, 14px 3.5px #4a331c, 17.5px 3.5px #4a331c, 21px 3.5px #4a331c, 24.5px 3.5px #4a331c, 28px 3.5px #4a331c,
+        3.5px 7px #4a331c, 7px 7px #4a331c, 10.5px 7px #4a331c, 14px 7px #4a331c, 17.5px 7px #4a331c, 21px 7px #4a331c, 24.5px 7px #4a331c, 28px 7px #4a331c,
+        3.5px 10.5px #4a331c, 7px 10.5px #d1a07e, 10.5px 10.5px #d1a07e, 14px 10.5px #d1a07e, 17.5px 10.5px #d1a07e, 21px 10.5px #d1a07e, 24.5px 10.5px #d1a07e, 28px 10.5px #4a331c,
+        3.5px 14px #d1a07e, 7px 14px #d1a07e, 10.5px 14px #d1a07e, 14px 14px #d1a07e, 17.5px 14px #d1a07e, 21px 14px #d1a07e, 24.5px 14px #d1a07e, 28px 14px #d1a07e,
+        3.5px 17.5px #d1a07e, 7px 17.5px #ffffff, 10.5px 17.5px #3cc2b2, 14px 17.5px #d1a07e, 17.5px 17.5px #d1a07e, 21px 17.5px #3cc2b2, 24.5px 17.5px #ffffff, 28px 17.5px #d1a07e,
+        3.5px 21px #d1a07e, 7px 21px #d1a07e, 10.5px 21px #d1a07e, 14px 21px #a27c54, 17.5px 21px #a27c54, 21px 21px #d1a07e, 24.5px 21px #d1a07e, 28px 21px #d1a07e,
+        3.5px 24.5px #d1a07e, 7px 24.5px #d1a07e, 10.5px 24.5px #705030, 14px 24.5px #705030, 17.5px 24.5px #705030, 21px 24.5px #705030, 24.5px 24.5px #d1a07e, 28px 24.5px #d1a07e,
+        3.5px 28px #d1a07e, 7px 28px #d1a07e, 10.5px 28px #705030, 14px 28px #d1a07e, 17.5px 28px #d1a07e, 21px 28px #705030, 24.5px 28px #d1a07e, 28px 28px #d1a07e;
+    }
+
+    /* Activity Gallery Grid */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      margin-top: 6px;
+    }
+
+    .gallery-item {
+      height: 80px; /* Increased from 60px to fill space */
+      background: #8f8f8f;
+      border: 2px solid var(--mc-wood);
+      box-shadow: inset -2px -2px 0px #4a331c, inset 2px 2px 0px #a27c54;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gallery-label {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      color: #ffffff;
+      font-size: 6.5px;
+      text-align: center;
+      padding: 1px 0;
+      font-family: 'Prompt', sans-serif;
+      font-weight: 500;
+      z-index: 3;
+    }
+
+    /* Print optimization */
+    @media print {
+      body {
+        background: white;
+        margin: 0;
+        padding: 0;
+      }
+      .a4-page {
+        margin: 0;
+        border: none;
+        box-shadow: none;
+        padding: 10mm 12mm;
+        width: 210mm;
+        height: 297mm;
+        background: var(--mc-gui-bg) !important;
+        box-sizing: border-box;
+        page-break-after: avoid;
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="a4-page">
+    <!-- Header -->
+    <header>
+      <div class="header-text">
+        <div class="tagline">BEST PRACTICE PORTFOLIO // OBEC AWARDS</div>
+        <h1>การพัฒนาพหุปัญญาและแนวคิดเชิงคำนวณผ่าน Minecraft ด้วยกระบวนการ GPAS 5 Steps</h1>
+        <div class="meta-info">ผู้เสนอผลงาน: นายภาณธร ภรธนบูรณ์ | โรงเรียนวัดบ้านรุน | ระดับ ป.6 (N = 6)</div>
+      </div>
+      <div class="header-logo">⛏️</div>
+    </header>
+
+    <!-- Main Grid Content -->
+    <div class="main-grid">
+      
+      <!-- Left Column (40%) -->
+      <div class="left-col">
+        <!-- Background Panel -->
+        <div class="panel">
+          <span class="panel-title">📌 ความสำคัญและสภาพปัญหา</span>
+          <p style="font-size: 9px; text-indent: 10px; text-align: justify; margin-top: 3px;">
+            วิชาวิทยาการคำนวณมีมโนทัศน์ที่เป็นนามธรรมสูง การสอบทฤษฎีแบบเดิมทำให้เด็กขาดทักษะการแก้ปัญหาจริงและเบื่อหน่าย นวัตกรรมนี้จึงนำการบ้านการลงพื้นที่สัมภาษณ์ **ปราชญ์ชาวบ้าน** มาประยุกต์ใช้ในการ **สร้างบ้านใน Minecraft แบบถูกลำดับขั้นตอนจริง** เพื่อพัฒนาทักษะตรรกะคณิตศาสตร์ผ่านกระบวนการ GPAS 5 Steps
+          </p>
+          
+          <!-- 2-Image Interview Gallery Grid (Minecraft Inventory Style) -->
+          <div class="gallery-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 8px;">
+            <div class="gallery-item" style="height: 100px;">
+              <img src="interview1.jpg" alt="สัมภาษณ์ 1" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <div class="placeholder-text" style="font-size:7px; color:#fff; line-height:1.1;"><span>📷 สัมภาษณ์ 1</span></div>
+              <div class="gallery-label">สัมภาษณ์ช่าง 1</div>
+            </div>
+            <div class="gallery-item" style="height: 100px;">
+              <img src="interview2.jpg" alt="สัมภาษณ์ 2" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <div class="placeholder-text" style="font-size:7px; color:#fff; line-height:1.1;"><span>📷 สัมภาษณ์ 2</span></div>
+              <div class="gallery-label">สัมภาษณ์ช่าง 2</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scores & Results Panel -->
+        <div class="panel">
+          <span class="panel-title blue">📊 ผลสัมฤทธิ์หลังการใช้นวัตกรรม</span>
+          <p style="font-size: 8.5px; margin-bottom: 4px;">สรุปคะแนนทักษะ CT Pre-test vs Post-test (คะแนนเต็ม 40):</p>
+          
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>รายชื่อนักเรียน</th>
+                <th>ก่อนเรียน</th>
+                <th>หลังเรียน</th>
+                <th>พัฒนาการ</th>
+                <th>ผลประเมิน</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="left-align">1. พัชราภรณ์ (หญิง)</td>
+                <td>24</td>
+                <td>38</td>
+                <td style="color:#2e7d32; font-weight:bold;">+14</td>
+                <td>ดีเยี่ยม</td>
+              </tr>
+              <tr>
+                <td class="left-align">2. นภัสสร (หญิง)</td>
+                <td>25</td>
+                <td>35</td>
+                <td style="color:#2e7d32; font-weight:bold;">+10</td>
+                <td>ดีเยี่ยม</td>
+              </tr>
+              <tr>
+                <td class="left-align">3. จิราภรณ์ (หญิง)</td>
+                <td>16</td>
+                <td>34</td>
+                <td style="color:#2e7d32; font-weight:bold;">+18</td>
+                <td>ดีเยี่ยม</td>
+              </tr>
+              <tr>
+                <td class="left-align">4. สุทธิภัทร (ชาย)</td>
+                <td>10</td>
+                <td>34</td>
+                <td style="color:#2e7d32; font-weight:bold;">+24</td>
+                <td>ดีเยี่ยม</td>
+              </tr>
+              <tr>
+                <td class="left-align">5. จิดาภา (หญิง)</td>
+                <td>8</td>
+                <td>28</td>
+                <td style="color:#2e7d32; font-weight:bold;">+20</td>
+                <td>ดี</td>
+              </tr>
+              <tr>
+                <td class="left-align">6. สุรสิทธิ์ (ชาย)</td>
+                <td>5</td>
+                <td>26</td>
+                <td style="color:#2e7d32; font-weight:bold;">+21</td>
+                <td>พอใช้</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="stats-container">
+            <div class="stat-box">
+              <div class="stat-val">83.3%</div>
+              <div class="stat-label">ผ่านเกณฑ์ดีขึ้นไป</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val">+17.8</div>
+              <div class="stat-label">พัฒนาการเฉลี่ย</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-val">4.75</div>
+              <div class="stat-label">ความพึงพอใจการเรียน</div>
+            </div>
+          </div>
+          
+          <!-- Minecraft Logo Decoration -->
+          <div style="margin-top: 8px; text-align: center; height: 50px; overflow: hidden; border: 2px solid var(--mc-border-dark); box-shadow: inset -2px -2px 0px #b2b2b2, inset 2px 2px 0px #ffffff; background: #5c8e32;">
+            <img src="minecraft_logo.png" alt="Minecraft Logo" style="width: 100%; height: 100%; object-fit: cover; image-rendering: pixelated;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column (60%) -->
+      <div class="right-col">
+        <!-- GPAS Timeline Panel -->
+        <div class="panel">
+          <span class="panel-title blue">⚙️ ลำดับกิจกรรมเรียนรู้ GPAS 5 Steps x CT</span>
+          <div class="timeline" style="margin-top: 5px;">
+            
+            <div class="timeline-step">
+              <div class="step-num">HOMEWORK</div>
+              <div class="step-content">
+                <span class="step-title">Step 1: Gathering (สืบค้นปราชญ์ชาวบ้าน)</span>
+                <p class="step-desc">สัมภาษณ์ช่างในท้องถิ่น จดขั้นตอนการสร้างบ้านจริง (Decomposition)</p>
+              </div>
+            </div>
+
+            <div class="timeline-step">
+              <div class="step-num">HOUR 1</div>
+              <div class="step-content">
+                <span class="step-title">Step 2: Processing (เปรียบเทียบในเกม)</span>
+                <p class="step-desc">แลกเปลี่ยนข้อมูล และสำรวจเปรียบเทียบบ้านตัวอย่างในเซิร์ฟเวอร์ LAN</p>
+              </div>
+            </div>
+
+            <div class="timeline-step">
+              <div class="step-num">HOUR 2</div>
+              <div class="step-content" style="display: flex; gap: 10px; align-items: flex-start; width: 100%;">
+                <div style="flex: 1;">
+                  <span class="step-title">Step 2: Processing (วาดพิมพ์เขียวแปลนบ้าน)</span>
+                  <p class="step-desc">วาดแปลน Top View ลงกระดาษกราฟ และเขียนขั้นตอน Pseudocode (Abstraction)</p>
+                </div>
+                <div class="gallery-item" style="width: 75px; height: 50px; flex-shrink: 0; margin-top: 2px; border: 1.5px solid var(--mc-wood); box-shadow: none;">
+                  <img src="planning.jpg" alt="วางแผน" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                  <div class="placeholder-text" style="font-size:6px; color:#fff; line-height:1.1;"><span>📷 วางแผน</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-step">
+              <div class="step-num">HOUR 3-4</div>
+              <div class="step-content" style="display: flex; gap: 10px; align-items: flex-start; width: 100%;">
+                <div style="flex: 1;">
+                  <span class="step-title">Step 3: Applying 1 (ก่อสร้างจริง & Debug)</span>
+                  <p class="step-desc">สร้างบ้านตามลำดับ: *ปรับดิน → ผัง → ฐานราก → เสา → ผนัง → หลังคา → ไฟ* และแก้ไขบั๊ก</p>
+                </div>
+                <div class="gallery-item" style="width: 75px; height: 50px; flex-shrink: 0; margin-top: 2px; border: 1.5px solid var(--mc-wood); box-shadow: none;">
+                  <img src="minecraft.jpg" alt="ทำเกม" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                  <div class="placeholder-text" style="font-size:6px; color:#fff; line-height:1.1;"><span>📷 ทำเกม</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-step">
+              <div class="step-num">HOUR 5</div>
+              <div class="step-content">
+                <span class="step-title">Step 4-5: Applying 2 & S (ทัวร์ผลงาน & สะท้อนคิด)</span>
+                <p class="step-desc">จัดงานนิทรรศการ Home Tour, ทำข้อสอบ Post-test และทำแบบบันทึกสะท้อนคิด</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Student Work Panel -->
+        <div class="panel">
+          <span class="panel-title redstone">🏠 ผลสัมฤทธิ์ชิ้นงานของนักเรียน (ป.6 แบ่ง 2 กลุ่ม)</span>
+          
+          <!-- Project 1 Card -->
+          <div class="project-card">
+            <div class="project-name">กลุ่ม 1: บ้านไม้ประหยัดพลังงาน (Eco-Wooden Cabin)</div>
+            <div style="font-size: 8px; font-weight: bold; color: var(--mc-green); margin-bottom: 2px;">
+              สมาชิก: พัชราภรณ์, สุทธิภัทร, จิดาภา | คะแนนชิ้นงาน: 12 / 12 คะแนน (ผ่านเกณฑ์ดีเยี่ยม)
+            </div>
+            <p class="project-desc">
+              ก่อสร้างด้วยโครงสร้างไม้โอ๊กและหลังคาลาดเอียง ติดตั้งระบบเซ็นเซอร์ Daylight Detector เชื่อมวงจร Redstone ควบคุมระบบไฟฟ้าส่องสว่างอัตโนมัติ ติดสว่างสม่ำเสมอในเวลากลางคืน สะท้อนคิดได้ถูกต้องตรงเป้าหมาย
+            </p>
+          </div>
+
+          <!-- Project 2 Card -->
+          <div class="project-card">
+            <div class="project-name">กลุ่ม 2: บ้านดินทนทานระบบระแวดระวัง (Cozy Cob & Safety House)</div>
+            <div style="font-size: 8px; font-weight: bold; color: var(--mc-green); margin-bottom: 2px;">
+              สมาชิก: นภัสสร, จิราภรณ์, สุรสิทธิ์ | คะแนนชิ้นงาน: 10 / 12 คะแนน (ผ่านเกณฑ์ดี)
+            </div>
+            <p class="project-desc">
+              ใช้บล็อกดินสร้างทรงกล่องสมมาตรขอบมุมหิน ทนความร้อนสูง ติดประตูกลอัตโนมัติควบคุมโดยแป้นเหยียบหิน (Pressure Plate) แสดงตรรกะแบบเงื่อนไขจริงในการเข้าและออกบ้าน
+            </p>
+          </div>
+
+          <!-- General Presentation Gallery -->
+          <div class="gallery-grid" style="grid-template-columns: 1fr; gap: 6px; margin-top: 8px;">
+            <div class="gallery-item" style="height: 100px;">
+              <img src="presenting1.jpg" alt="นำเสนอ" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+              <div class="placeholder-text" style="font-size:7px; color:#fff; line-height:1.1;"><span>📷 รูปนำเสนอ (presenting1.jpg)</span></div>
+              <div class="gallery-label">บรรยากาศการนำเสนอและสะท้อนคิด</div>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Minecraft block decoration strip & Steve -->
+    <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: 8px 0;">
+      <!-- Steve Head (CSS Pixel Art) -->
+      <div class="steve-head-wrapper" title="Steve">
+        <div class="steve-css-head"></div>
+      </div>
+      
+      <div class="mc-decor-strip" style="margin: 0;">
+        <span class="mc-decor-block grass" title="Grass Block"></span>
+        <span class="mc-decor-block dirt" title="Dirt"></span>
+        <span class="mc-decor-block stone" title="Stone"></span>
+        <span class="mc-decor-block diamond" title="Diamond Ore"></span>
+        <span class="mc-decor-block redstone" title="Redstone Ore"></span>
+        <span class="mc-decor-block gold" title="Gold Ore"></span>
+        <span class="mc-decor-block emerald" title="Emerald Ore"></span>
+        <span class="mc-decor-block obsidian" title="Obsidian"></span>
+      </div>
+    </div>
+
+    <!-- Footer Area -->
+    <footer>
+      <div style="font-size: 10px;">นวัตกรรมแนวปฏิบัติที่เป็นเลิศ (Best Practice) บูรณาการหลักสูตร ว 4.2 ป.6</div>
+      <div class="qr-container">
+        <div style="text-align: right; margin-right: 4px;">
+          <div style="font-weight: bold; color: var(--text-dark); font-size: 11px;">แสกนดูข้อมูลเพิ่มเติม</div>
+          <div style="font-size: 9px; color: var(--text-dim);">รับชมแผนการสอนและวิดีโอผลงานนักเรียน</div>
+        </div>
+        <div class="qr-frame">
+          <!-- เมื่อได้ URL ของ Vercel แล้ว สามารถเปลี่ยนชื่อโดเมนตรงนี้ได้เลยครับ เช่น https://your-project.vercel.app/index.html#matrix -->
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://best-practice-minecraft-ct.vercel.app/index.html%23matrix" alt="QR Code" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+          <div class="placeholder-text" style="color: #999; padding: 2px;"><span>แสกน QR</span></div>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+</body>
+</html>

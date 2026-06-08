@@ -1,0 +1,2051 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Best Practice: CT × Minecraft × GPAS 5 Steps</title>
+<meta name="description" content="การพัฒนาพหุปัญญาและแนวคิดเชิงคำนวณผ่านการออกแบบสร้างสรรค์ด้วย Minecraft ด้วยกระบวนการ GPAS 5 Steps">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sky-day: #87CEEB;
+  --sky-sunset: #FF6B35;
+  --sky-night: #0a0e1a;
+  --grass: #5D9B3E;
+  --grass-dark: #4A7A2E;
+  --grass-top: #7EC850;
+  --dirt: #8B6914;
+  --dirt-dark: #6B4F10;
+  --stone: #7F7F7F;
+  --stone-dark: #5A5A5A;
+  --diamond: #4AEDD9;
+  --diamond-glow: rgba(74,237,217,0.3);
+  --redstone: #FF3333;
+  --gold: #FFD700;
+  --gold-dark: #CC9900;
+  --emerald: #17DD62;
+  --obsidian: #1B1028;
+  --wood: #BC9862;
+  --lava: #FF5500;
+  --water: #3F76E4;
+  --xp-green: #80FF20;
+  --bg: #1a1a2e;
+  --text: #f0f0f0;
+  --text-dim: #a0a0b0;
+  --pixel: 'Press Start 2P', monospace;
+  --body: 'Prompt', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--body);
+  color: var(--text);
+  line-height: 1.8;
+  overflow-x: hidden;
+  background: var(--bg);
+}
+
+/* ========== SCROLLBAR ========== */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #111; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--grass-top), var(--grass-dark), var(--dirt));
+  border-radius: 0;
+  image-rendering: pixelated;
+}
+
+/* ========== SKY BACKGROUND ========== */
+#sky {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  transition: background 0.5s ease;
+  background: linear-gradient(180deg, #87CEEB 0%, #b8e4f9 40%, #7ec850 95%, #5d9b3e 100%);
+}
+
+#stars {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  animation: twinkle 2s ease-in-out infinite alternate;
+}
+@keyframes twinkle { 0% { opacity: 0.3; } 100% { opacity: 1; } }
+
+#sun-moon {
+  position: fixed;
+  z-index: 0;
+  width: 60px;
+  height: 60px;
+  border-radius: 0;
+  image-rendering: pixelated;
+  transition: all 1s ease;
+}
+
+/* ========== TERRAIN ========== */
+#terrain {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* ========== XP BAR ========== */
+#xp-bar-container {
+  position: fixed;
+  bottom: 68px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(600px, 90vw);
+  height: 8px;
+  background: #111;
+  border: 2px solid #333;
+  z-index: 1001;
+  overflow: hidden;
+}
+
+#xp-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--xp-green), #AAFF40);
+  box-shadow: 0 0 10px var(--xp-green);
+  transition: width 0.3s ease;
+}
+
+#xp-level {
+  position: fixed;
+  bottom: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--pixel);
+  font-size: 10px;
+  color: var(--xp-green);
+  text-shadow: 0 0 4px rgba(0,0,0,0.8), 0 0 10px var(--xp-green);
+  z-index: 1002;
+}
+
+/* ========== HOTBAR NAVIGATION ========== */
+#hotbar {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+  z-index: 1000;
+  padding: 4px;
+  background: rgba(0,0,0,0.7);
+  border: 2px solid #555;
+  border-radius: 4px;
+}
+
+.hotbar-slot {
+  width: 48px;
+  height: 48px;
+  background: rgba(50,50,50,0.8);
+  border: 2px solid #222;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.hotbar-slot:hover,
+.hotbar-slot.active {
+  border-color: #fff;
+  background: rgba(100,100,100,0.8);
+  transform: scale(1.05);
+}
+
+.hotbar-slot.active {
+  border-color: var(--diamond);
+  box-shadow: 0 0 10px var(--diamond-glow);
+}
+
+.hotbar-slot .slot-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.hotbar-slot .slot-key {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-family: var(--pixel);
+  font-size: 6px;
+  color: #888;
+}
+
+.hotbar-slot .slot-tooltip {
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a0a30;
+  border: 2px solid #5020a0;
+  color: #fff;
+  padding: 6px 12px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 1010;
+}
+
+.hotbar-slot:hover .slot-tooltip { opacity: 1; }
+
+@media (max-width: 600px) {
+  .hotbar-slot { width: 38px; height: 38px; }
+  .hotbar-slot .slot-icon { font-size: 16px; }
+  .hotbar-slot .slot-key { display: none; }
+  #xp-bar-container { bottom: 56px; }
+  #xp-level { bottom: 64px; }
+}
+
+/* ========== ACHIEVEMENT POPUP ========== */
+.achievement-popup {
+  position: fixed;
+  top: 20px;
+  right: -400px;
+  z-index: 2000;
+  background: linear-gradient(135deg, #2a1a4a, #1a0a30);
+  border: 2px solid #5020a0;
+  border-radius: 8px;
+  padding: 16px 24px 16px 60px;
+  min-width: 280px;
+  transition: right 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 4px 30px rgba(80,32,160,0.4);
+}
+
+.achievement-popup.show { right: 20px; }
+
+.achievement-popup .ach-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 28px;
+}
+
+.achievement-popup .ach-title {
+  font-family: var(--pixel);
+  font-size: 8px;
+  color: var(--gold);
+  letter-spacing: 0.5px;
+}
+
+.achievement-popup .ach-desc {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* ========== MAIN CONTENT ========== */
+main {
+  position: relative;
+  z-index: 10;
+}
+
+.section {
+  padding: 100px 20px 120px;
+  max-width: 1100px;
+  margin: 0 auto;
+  min-height: 80vh;
+}
+
+.section-anchor { scroll-margin-top: 20px; }
+
+/* ========== HERO ========== */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 20px 140px;
+  position: relative;
+}
+
+.hero-inner { max-width: 800px; position: relative; z-index: 5; }
+
+.hero-badge {
+  display: inline-block;
+  font-family: var(--pixel);
+  font-size: 8px;
+  color: var(--gold);
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--gold-dark);
+  padding: 8px 20px;
+  border-radius: 4px;
+  margin-bottom: 24px;
+  animation: fadeDown 1s ease;
+  letter-spacing: 1px;
+}
+
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+.hero-blocks {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 24px;
+  animation: fadeUp 1s ease 0.2s both;
+}
+
+.iso-block {
+  width: 40px;
+  height: 46px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s;
+  animation: blockFloat 3s ease-in-out infinite;
+}
+
+.iso-block:hover { transform: scale(1.2) translateY(-8px) !important; }
+
+.iso-block .top {
+  position: absolute;
+  width: 40px;
+  height: 12px;
+  top: 0;
+  clip-path: polygon(50% 0%, 100% 25%, 50% 50%, 0% 25%);
+}
+
+.iso-block .left {
+  position: absolute;
+  width: 20px;
+  height: 34px;
+  top: 6px;
+  left: 0;
+  clip-path: polygon(0% 15%, 100% 0%, 100% 85%, 0% 100%);
+}
+
+.iso-block .right {
+  position: absolute;
+  width: 20px;
+  height: 34px;
+  top: 6px;
+  right: 0;
+  clip-path: polygon(0% 0%, 100% 15%, 100% 100%, 0% 85%);
+}
+
+.iso-block:nth-child(1) .top { background: var(--grass-top); }
+.iso-block:nth-child(1) .left { background: var(--dirt); }
+.iso-block:nth-child(1) .right { background: var(--dirt-dark); }
+
+.iso-block:nth-child(2) .top { background: #999; }
+.iso-block:nth-child(2) .left { background: var(--stone); }
+.iso-block:nth-child(2) .right { background: var(--stone-dark); }
+
+.iso-block:nth-child(3) .top { background: #6ff7e7; }
+.iso-block:nth-child(3) .left { background: var(--diamond); }
+.iso-block:nth-child(3) .right { background: #38bfb0; }
+
+.iso-block:nth-child(4) .top { background: #ff6666; }
+.iso-block:nth-child(4) .left { background: var(--redstone); }
+.iso-block:nth-child(4) .right { background: #cc0000; }
+
+.iso-block:nth-child(5) .top { background: #ffe44d; }
+.iso-block:nth-child(5) .left { background: var(--gold); }
+.iso-block:nth-child(5) .right { background: var(--gold-dark); }
+
+.iso-block:nth-child(6) .top { background: #5ff590; }
+.iso-block:nth-child(6) .left { background: var(--emerald); }
+.iso-block:nth-child(6) .right { background: #10aa48; }
+
+.iso-block:nth-child(1) { animation-delay: 0s; }
+.iso-block:nth-child(2) { animation-delay: 0.3s; }
+.iso-block:nth-child(3) { animation-delay: 0.6s; }
+.iso-block:nth-child(4) { animation-delay: 0.9s; }
+.iso-block:nth-child(5) { animation-delay: 1.2s; }
+.iso-block:nth-child(6) { animation-delay: 1.5s; }
+
+@keyframes blockFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.hero-title {
+  font-size: clamp(1.6rem, 4.5vw, 3rem);
+  font-weight: 900;
+  line-height: 1.4;
+  margin-bottom: 16px;
+  animation: fadeUp 1s ease 0.3s both;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+}
+
+.hero-title .hl-green { color: var(--grass-top); }
+.hero-title .hl-cyan { color: var(--diamond); }
+.hero-title .hl-gold { color: var(--gold); }
+
+.hero-sub {
+  font-size: 1.1rem;
+  color: var(--text-dim);
+  font-weight: 300;
+  margin-bottom: 8px;
+  animation: fadeUp 1s ease 0.5s both;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+}
+
+.hero-typing-wrap {
+  min-height: 2em;
+  animation: fadeUp 1s ease 0.6s both;
+}
+
+#hero-typing {
+  color: var(--diamond);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.cursor-blink {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: var(--diamond);
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: blink 0.7s infinite;
+}
+
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+.hero-tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+  animation: fadeUp 1s ease 0.8s both;
+}
+
+.mc-tag {
+  font-family: var(--pixel);
+  font-size: 7px;
+  padding: 6px 14px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+.mc-tag.cyan { background: rgba(74,237,217,0.15); border: 1px solid rgba(74,237,217,0.4); color: var(--diamond); }
+.mc-tag.green { background: rgba(93,155,62,0.15); border: 1px solid rgba(93,155,62,0.4); color: var(--grass-top); }
+.mc-tag.gold { background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.4); color: var(--gold); }
+
+@keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+
+.scroll-hint {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  animation: bobDown 2s ease infinite;
+  text-align: center;
+}
+
+.scroll-hint span {
+  display: block;
+  font-family: var(--pixel);
+  font-size: 7px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.scroll-arrow {
+  width: 0; height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 12px solid var(--grass-top);
+  margin: 0 auto;
+  filter: drop-shadow(0 0 4px var(--grass));
+}
+
+@keyframes bobDown {
+  0%,100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(12px); }
+}
+
+/* ========== CONTENT CARDS ========== */
+.mc-panel {
+  background: rgba(0,0,0,0.65);
+  border: 3px solid #555;
+  border-radius: 8px;
+  padding: 32px;
+  margin-bottom: 32px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.mc-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, var(--grass) 0, var(--grass) 8px, var(--grass-dark) 8px, var(--grass-dark) 16px);
+}
+
+.mc-panel.diamond-border { border-color: rgba(74,237,217,0.3); }
+.mc-panel.diamond-border::before { background: repeating-linear-gradient(90deg, var(--diamond) 0, var(--diamond) 8px, #38bfb0 8px, #38bfb0 16px); }
+
+.mc-panel.gold-border { border-color: rgba(255,215,0,0.3); }
+.mc-panel.gold-border::before { background: repeating-linear-gradient(90deg, var(--gold) 0, var(--gold) 8px, var(--gold-dark) 8px, var(--gold-dark) 16px); }
+
+.mc-panel.redstone-border { border-color: rgba(255,50,50,0.3); }
+.mc-panel.redstone-border::before { background: repeating-linear-gradient(90deg, var(--redstone) 0, var(--redstone) 8px, #cc0000 8px, #cc0000 16px); }
+
+.panel-title {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.panel-subtitle {
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+
+.pixel-heading {
+  font-family: var(--pixel);
+  font-size: clamp(9px, 1.5vw, 12px);
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ========== STATS GRID ========== */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.stat-block {
+  background: rgba(255,255,255,0.03);
+  border: 2px solid #333;
+  border-radius: 6px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-block:hover {
+  border-color: var(--diamond);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(74,237,217,0.15);
+}
+
+.stat-block .stat-emoji { font-size: 2rem; margin-bottom: 8px; display: block; }
+
+.stat-block .stat-val {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--diamond);
+  display: block;
+}
+
+.stat-block .stat-label {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* ========== CRAFTING TABLE ========== */
+.crafting-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin: 40px 0;
+}
+
+.crafting-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 80px);
+  grid-template-rows: repeat(3, 80px);
+  gap: 4px;
+  background: #3a2a1a;
+  border: 4px solid #5a4020;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+.craft-slot {
+  background: #8b6914;
+  border: 2px solid #6b4f10;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.craft-slot:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 12px rgba(255,215,0,0.3);
+}
+
+.craft-slot .craft-label {
+  position: absolute;
+  bottom: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--pixel);
+  font-size: 5px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.craft-slot:hover .craft-label { opacity: 1; }
+
+.craft-arrow {
+  font-size: 2.5rem;
+  color: #888;
+  animation: arrowPulse 2s ease infinite;
+}
+
+@keyframes arrowPulse {
+  0%,100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.craft-result {
+  width: 90px;
+  height: 90px;
+  background: linear-gradient(135deg, var(--diamond), var(--grass-top));
+  border: 3px solid var(--diamond);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  box-shadow: 0 0 20px var(--diamond-glow);
+  animation: resultGlow 3s ease infinite;
+  cursor: pointer;
+}
+
+.craft-result:hover { transform: scale(1.1); }
+
+@keyframes resultGlow {
+  0%,100% { box-shadow: 0 0 15px var(--diamond-glow); }
+  50% { box-shadow: 0 0 30px var(--diamond-glow), 0 0 60px rgba(74,237,217,0.1); }
+}
+
+@media (max-width: 600px) {
+  .crafting-grid { grid-template-columns: repeat(3, 60px); grid-template-rows: repeat(3, 60px); }
+  .craft-slot { font-size: 1.5rem; }
+  .craft-result { width: 70px; height: 70px; font-size: 2rem; }
+}
+
+/* ========== GPAS STEPS ========== */
+.gpas-steps { margin: 24px 0; }
+
+.gpas-step-card {
+  background: rgba(0,0,0,0.4);
+  border: 2px solid #333;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.gpas-step-card.open { border-color: var(--grass-top); }
+
+.gpas-step-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: background 0.3s;
+  user-select: none;
+}
+
+.gpas-step-header:hover { background: rgba(255,255,255,0.03); }
+
+.step-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+}
+
+.step-meta { flex: 1; }
+
+.step-meta h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.step-meta small {
+  font-family: var(--pixel);
+  font-size: 7px;
+  color: var(--text-dim);
+}
+
+.step-chevron {
+  font-size: 1.2rem;
+  color: #666;
+  transition: transform 0.3s;
+}
+
+.gpas-step-card.open .step-chevron { transform: rotate(180deg); color: var(--grass-top); }
+
+.step-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+}
+
+.step-body-inner {
+  padding: 0 20px 20px;
+}
+
+.step-ct-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.ct-badge {
+  font-family: var(--pixel);
+  font-size: 6px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background: rgba(74,237,217,0.1);
+  border: 1px solid rgba(74,237,217,0.3);
+  color: var(--diamond);
+  letter-spacing: 0.5px;
+}
+
+.step-activities {
+  list-style: none;
+  padding: 0;
+}
+
+.step-activities li {
+  padding: 6px 0 6px 24px;
+  position: relative;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+}
+
+.step-activities li::before {
+  content: '▸';
+  position: absolute;
+  left: 6px;
+  color: var(--grass-top);
+  font-weight: bold;
+}
+
+.mi-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.mi-badge {
+  font-size: 0.7rem;
+  padding: 3px 10px;
+  border-radius: 50px;
+  background: rgba(255,215,0,0.1);
+  border: 1px solid rgba(255,215,0,0.2);
+  color: var(--gold);
+}
+
+/* ========== CT MATRIX ========== */
+.ct-matrix {
+  overflow-x: auto;
+  margin: 24px 0;
+}
+
+.ct-matrix table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  min-width: 600px;
+}
+
+.ct-matrix th, .ct-matrix td {
+  padding: 12px 14px;
+  border: 1px solid #333;
+  text-align: left;
+}
+
+.ct-matrix thead th {
+  background: rgba(74,237,217,0.1);
+  color: var(--diamond);
+  font-weight: 700;
+  font-size: 0.8rem;
+  position: sticky;
+  top: 0;
+}
+
+.ct-matrix tbody tr {
+  transition: background 0.2s;
+}
+
+.ct-matrix tbody tr:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+.ct-matrix .ct-name {
+  font-weight: 700;
+  color: var(--grass-top);
+  white-space: nowrap;
+}
+
+.ct-matrix .check { color: var(--emerald); font-size: 1.1rem; }
+
+/* ========== INDICATORS ========== */
+.indicators-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.indicator-card {
+  background: rgba(0,0,0,0.4);
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.indicator-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--gold);
+}
+
+.indicator-card .ind-code {
+  font-family: var(--pixel);
+  font-size: 8px;
+  color: var(--gold);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.indicator-card h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+.indicator-card .mc-activity {
+  font-size: 0.85rem;
+  color: var(--diamond);
+  padding: 8px 12px;
+  background: rgba(74,237,217,0.08);
+  border-radius: 6px;
+  border-left: 3px solid var(--diamond);
+}
+
+/* ========== RESULTS ========== */
+.result-bars { margin: 24px 0; }
+
+.result-bar-item {
+  margin-bottom: 20px;
+}
+
+.result-bar-item .bar-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+}
+
+.result-bar-item .bar-header .bar-name { font-weight: 600; }
+.result-bar-item .bar-header .bar-val { color: var(--diamond); font-weight: 700; }
+
+.bar-track {
+  height: 20px;
+  background: #222;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  width: 0;
+  transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  position: relative;
+}
+
+.bar-fill.animated { /* JS sets width */ }
+
+.bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+  animation: barShine 2s ease infinite;
+}
+
+@keyframes barShine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+.compare-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.compare-card {
+  background: rgba(0,0,0,0.4);
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+
+.compare-card.before { border-color: rgba(255,50,50,0.3); }
+.compare-card.after { border-color: rgba(74,237,217,0.3); }
+
+.compare-card .cmp-label {
+  font-family: var(--pixel);
+  font-size: 8px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.compare-card.before .cmp-label { color: var(--redstone); }
+.compare-card.after .cmp-label { color: var(--emerald); }
+
+.compare-card .cmp-value {
+  font-size: 2.5rem;
+  font-weight: 900;
+  display: block;
+}
+
+.compare-card.before .cmp-value { color: var(--redstone); }
+.compare-card.after .cmp-value { color: var(--emerald); }
+
+.compare-card .cmp-desc {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+@media (max-width: 500px) {
+  .compare-grid { grid-template-columns: 1fr; }
+}
+
+/* ========== SUCCESS FACTORS ========== */
+.success-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.success-card {
+  background: rgba(0,0,0,0.4);
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.success-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--emerald);
+}
+
+.success-card .sc-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
+.success-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+.success-card p { font-size: 0.85rem; color: var(--text-dim); }
+
+/* ========== LESSONS ========== */
+.lesson-accordion { margin: 24px 0; }
+
+.lesson-item {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #333;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.lesson-header {
+  padding: 14px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: background 0.2s;
+  user-select: none;
+}
+
+.lesson-header:hover { background: rgba(255,255,255,0.03); }
+
+.lesson-header .lesson-num {
+  font-family: var(--pixel);
+  font-size: 8px;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+.lesson-header .lesson-title { font-weight: 600; flex: 1; }
+.lesson-header .lesson-chevron { color: #666; transition: transform 0.3s; }
+
+.lesson-item.open .lesson-chevron { transform: rotate(180deg); color: var(--gold); }
+
+.lesson-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+}
+
+.lesson-body-inner {
+  padding: 0 20px 16px;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+/* ========== TIMELINE ========== */
+.spread-timeline { margin: 24px 0; }
+
+.timeline-item {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
+  align-items: flex-start;
+}
+
+.timeline-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+}
+
+.timeline-content h4 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+.timeline-content p { font-size: 0.85rem; color: var(--text-dim); }
+
+/* ========== FOOTER ========== */
+#footer {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 40px 20px 100px;
+  border-top: 4px solid;
+  border-image: repeating-linear-gradient(90deg, var(--grass) 0, var(--grass) 8px, var(--grass-dark) 8px, var(--grass-dark) 16px) 4;
+}
+
+#footer .footer-pixel {
+  font-family: var(--pixel);
+  font-size: 8px;
+  color: var(--text-dim);
+  line-height: 2.5;
+}
+
+#footer .footer-pixel a { color: var(--diamond); text-decoration: none; }
+#footer .footer-pixel a:hover { text-decoration: underline; }
+
+/* ========== REVEAL ANIMATION ========== */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ========== MOBILE ========== */
+@media (max-width: 600px) {
+  .section { padding: 60px 16px 100px; }
+  .mc-panel { padding: 20px; }
+  .crafting-grid { grid-template-columns: repeat(3, 56px); grid-template-rows: repeat(3, 56px); }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== SKY SYSTEM ===== -->
+<div id="sky"></div>
+<div id="stars"></div>
+<div id="sun-moon"></div>
+
+<!-- ===== TERRAIN ===== -->
+<canvas id="terrain"></canvas>
+
+<!-- ===== XP BAR ===== -->
+<div id="xp-bar-container"><div id="xp-bar-fill"></div></div>
+<div id="xp-level">Lv. 0</div>
+
+<!-- ===== HOTBAR NAV ===== -->
+<nav id="hotbar">
+  <a href="#hero" class="hotbar-slot active" data-section="hero">
+    <span class="slot-key">1</span>
+    <span class="slot-icon">🏠</span>
+    <span class="slot-tooltip">หน้าแรก</span>
+  </a>
+  <a href="#background" class="hotbar-slot" data-section="background">
+    <span class="slot-key">2</span>
+    <span class="slot-icon">📋</span>
+    <span class="slot-tooltip">ความเป็นมา</span>
+  </a>
+  <a href="#framework" class="hotbar-slot" data-section="framework">
+    <span class="slot-key">3</span>
+    <span class="slot-icon">🧩</span>
+    <span class="slot-tooltip">กรอบแนวคิด</span>
+  </a>
+  <a href="#gpas" class="hotbar-slot" data-section="gpas">
+    <span class="slot-key">4</span>
+    <span class="slot-icon">📐</span>
+    <span class="slot-tooltip">GPAS 5 Steps</span>
+  </a>
+  <a href="#indicators" class="hotbar-slot" data-section="indicators">
+    <span class="slot-key">5</span>
+    <span class="slot-icon">🎯</span>
+    <span class="slot-tooltip">ตัวชี้วัด</span>
+  </a>
+  <a href="#matrix" class="hotbar-slot" data-section="matrix">
+    <span class="slot-key">6</span>
+    <span class="slot-icon">⚡</span>
+    <span class="slot-tooltip">CT × Minecraft</span>
+  </a>
+  <a href="#results" class="hotbar-slot" data-section="results">
+    <span class="slot-key">7</span>
+    <span class="slot-icon">📊</span>
+    <span class="slot-tooltip">ผลการดำเนินงาน</span>
+  </a>
+  <a href="#success" class="hotbar-slot" data-section="success">
+    <span class="slot-key">8</span>
+    <span class="slot-icon">⭐</span>
+    <span class="slot-tooltip">ปัจจัยความสำเร็จ</span>
+  </a>
+  <a href="#spread" class="hotbar-slot" data-section="spread">
+    <span class="slot-key">9</span>
+    <span class="slot-icon">🌍</span>
+    <span class="slot-tooltip">การเผยแพร่</span>
+  </a>
+</nav>
+
+<!-- ===== ACHIEVEMENT POPUP ===== -->
+<div class="achievement-popup" id="achievement">
+  <span class="ach-icon">🏆</span>
+  <div class="ach-title">ACHIEVEMENT GET!</div>
+  <div class="ach-desc" id="ach-text"></div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">⭐ OBEC AWARDS — BEST PRACTICE</div>
+    <div class="hero-blocks">
+      <div class="iso-block"><div class="top"></div><div class="left"></div><div class="right"></div></div>
+      <div class="iso-block"><div class="top"></div><div class="left"></div><div class="right"></div></div>
+      <div class="iso-block"><div class="top"></div><div class="left"></div><div class="right"></div></div>
+      <div class="iso-block"><div class="top"></div><div class="left"></div><div class="right"></div></div>
+      <div class="iso-block"><div class="top"></div><div class="left"></div><div class="right"></div></div>
+      <div class="iso-block"><div class="top"></div><div class="left"></div><div class="right"></div></div>
+    </div>
+    <h1 class="hero-title">
+      การพัฒนา<span class="hl-gold">พหุปัญญา</span>และ<span class="hl-cyan">แนวคิดเชิงคำนวณ</span><br>
+      ผ่านการออกแบบสร้างสรรค์ด้วย <span class="hl-green">Minecraft</span>
+    </h1>
+    <p class="hero-sub">ด้วยกระบวนการ GPAS 5 Steps สำหรับนักเรียนชั้นประถมศึกษาปีที่ 6</p>
+    <div class="hero-typing-wrap">
+      <span id="hero-typing"></span><span class="cursor-blink"></span>
+    </div>
+    <div class="hero-tags">
+      <span class="mc-tag cyan">COMPUTATIONAL THINKING</span>
+      <span class="mc-tag green">MINECRAFT JAVA</span>
+      <span class="mc-tag gold">GPAS 5 STEPS</span>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>SCROLL DOWN</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- BACKGROUND -->
+<section id="background" class="section section-anchor">
+  <div class="mc-panel reveal">
+    <div class="pixel-heading">📋 SECTION 01 — <span style="color:var(--diamond)">ความเป็นมาและความสำคัญ</span></div>
+    <div class="panel-title">ทำไมต้อง Minecraft × Computational Thinking?</div>
+    <div class="panel-subtitle">สภาพปัญหาในการจัดการเรียนรู้วิทยาการคำนวณ ระดับชั้น ป.6</div>
+
+    <div class="stats-row">
+      <div class="stat-block reveal">
+        <span class="stat-emoji">🧠</span>
+        <span class="stat-val" data-target="68">0</span><span style="color:var(--text-dim)">%</span>
+        <span class="stat-label">ขาดทักษะคิดเชิงตรรกะ</span>
+      </div>
+      <div class="stat-block reveal">
+        <span class="stat-emoji">😴</span>
+        <span class="stat-val" data-target="72">0</span><span style="color:var(--text-dim)">%</span>
+        <span class="stat-label">ขาดแรงจูงใจเรียน CT</span>
+      </div>
+      <div class="stat-block reveal">
+        <span class="stat-emoji">🔗</span>
+        <span class="stat-val" data-target="65">0</span><span style="color:var(--text-dim)">%</span>
+        <span class="stat-label">เชื่อมโยงกับชีวิตจริงไม่ได้</span>
+      </div>
+      <div class="stat-block reveal">
+        <span class="stat-emoji">👥</span>
+        <span class="stat-val" data-target="6">0</span>
+        <span class="stat-label">จำนวนนักเรียนกลุ่มเป้าหมาย</span>
+      </div>
+    </div>
+
+    <div class="pixel-heading" style="margin-top:32px;">🏛️ ความสอดคล้องกับนโยบาย</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <span class="mc-tag green">หลักสูตร ว 4.2</span>
+      <span class="mc-tag cyan">Active Learning</span>
+      <span class="mc-tag gold">ยุทธศาสตร์ชาติ 20 ปี</span>
+      <span class="mc-tag green">สพฐ. Anywhere Anytime</span>
+      <span class="mc-tag cyan">แผน สพป.</span>
+    </div>
+  </div>
+</section>
+
+<!-- FRAMEWORK = CRAFTING TABLE -->
+<section id="framework" class="section section-anchor">
+  <div class="mc-panel diamond-border reveal">
+    <div class="pixel-heading">🧩 SECTION 02 — <span style="color:var(--gold)">กรอบแนวคิดเชิงบูรณาการ</span></div>
+    <div class="panel-title">Crafting Recipe: สูตรนวัตกรรม</div>
+    <div class="panel-subtitle">บูรณาการ 3 แนวคิดหลักผ่าน GPAS 5 Steps เปรียบเสมือนการคราฟต์ไอเทมใน Minecraft</div>
+
+    <div class="crafting-container">
+      <div class="crafting-grid">
+        <div class="craft-slot">🧠<span class="craft-label">MI Theory</span></div>
+        <div class="craft-slot">💻<span class="craft-label">CT 4 Pillars</span></div>
+        <div class="craft-slot">🎮<span class="craft-label">GBL</span></div>
+        <div class="craft-slot">🔍<span class="craft-label">Gathering</span></div>
+        <div class="craft-slot">⚙️<span class="craft-label">Processing</span></div>
+        <div class="craft-slot">🔨<span class="craft-label">Applying</span></div>
+        <div class="craft-slot">📢<span class="craft-label">Presenting</span></div>
+        <div class="craft-slot">🔄<span class="craft-label">Self-Reg</span></div>
+        <div class="craft-slot">⛏️<span class="craft-label">Minecraft</span></div>
+      </div>
+      <div class="craft-arrow">➡️</div>
+      <div class="craft-result" title="นวัตกรรม Best Practice!">💎</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:32px;">
+      <div style="background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.2);border-radius:8px;padding:20px;">
+        <div style="font-size:1.5rem;margin-bottom:8px;">🧠</div>
+        <h3 style="color:var(--gold);font-size:1rem;">ทฤษฎีพหุปัญญา (Howard Gardner)</h3>
+        <p style="font-size:0.85rem;color:var(--text-dim);margin-top:8px;">เน้นปัญญาด้านตรรกะ-คณิตศาสตร์ (Logical-Mathematical) เป็นหลัก พร้อมพัฒนาด้าน Spatial, Interpersonal, Intrapersonal ผ่านกิจกรรม Minecraft</p>
+      </div>
+      <div style="background:rgba(74,237,217,0.05);border:1px solid rgba(74,237,217,0.2);border-radius:8px;padding:20px;">
+        <div style="font-size:1.5rem;margin-bottom:8px;">💻</div>
+        <h3 style="color:var(--diamond);font-size:1rem;">Computational Thinking (Wing, 2006)</h3>
+        <p style="font-size:0.85rem;color:var(--text-dim);margin-top:8px;">4 เสาหลัก: Decomposition (แยกย่อยปัญหา), Pattern Recognition (จดจำรูปแบบ), Abstraction (คิดเชิงนามธรรม), Algorithm Design (ออกแบบขั้นตอน)</p>
+      </div>
+      <div style="background:rgba(93,155,62,0.05);border:1px solid rgba(93,155,62,0.2);border-radius:8px;padding:20px;">
+        <div style="font-size:1.5rem;margin-bottom:8px;">🎮</div>
+        <h3 style="color:var(--grass-top);font-size:1rem;">Game-Based Learning via Minecraft</h3>
+        <p style="font-size:0.85rem;color:var(--text-dim);margin-top:8px;">Sandbox 3D ที่ Open-ended, Safe Failure, Constructionist Learning (Papert), Multiplayer, Intrinsic Motivation</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GPAS 5 STEPS -->
+<section id="gpas" class="section section-anchor">
+  <div class="mc-panel gold-border reveal">
+    <div class="pixel-heading">📐 SECTION 03 — <span style="color:var(--gold)">GPAS 5 Steps × CT × Minecraft</span></div>
+    <div class="panel-title">หน่วยการเรียนรู้ "สร้างสรรค์โลกดิจิทัล: เมืองอัจฉริยะด้วย Minecraft"</div>
+    <div class="panel-subtitle">8 ชั่วโมง · 4 สัปดาห์ · คลิกแต่ละขั้นเพื่อดูรายละเอียด</div>
+
+    <div class="gpas-steps">
+      <div class="gpas-step-card" data-step="1">
+        <div class="gpas-step-header">
+          <div class="step-icon" style="background:linear-gradient(135deg,#f59e0b,#d97706);">🔍</div>
+          <div class="step-meta">
+            <h3>Step 1: Gathering — สังเกต รวบรวมข้อมูล</h3>
+            <small>ชั่วโมงที่ 1-2</small>
+          </div>
+          <span class="step-chevron">▼</span>
+        </div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <div class="step-ct-badges">
+              <span class="ct-badge">✅ DECOMPOSITION</span>
+              <span class="ct-badge">✅ PATTERN RECOGNITION</span>
+            </div>
+            <ul class="step-activities">
+              <li>ดูวิดีโอ "Smart City in Minecraft" เป็นแรงบันดาลใจ</li>
+              <li>เรียนรู้พื้นฐาน Minecraft: เคลื่อนที่ วางบล็อก Creative Mode</li>
+              <li>สำรวจ Minecraft World ที่ครูเตรียมไว้ (มีตัวอย่างเมืองสำเร็จ)</li>
+              <li><strong>Decompose:</strong> แยกย่อยเมืองเป็นส่วนประกอบ (ถนน บ้าน สวน ระบบไฟ)</li>
+              <li><strong>Pattern:</strong> จดจำรูปแบบการวางบล็อกที่ซ้ำ สมมาตร ลวดลาย</li>
+              <li>ค้นหาข้อมูล Smart Village จากอินเทอร์เน็ต (ว 4.2 ป.6/3)</li>
+            </ul>
+            <div class="mi-badges">
+              <span class="mi-badge">★ Logical-Mathematical</span>
+              <span class="mi-badge">Spatial</span>
+              <span class="mi-badge">Interpersonal</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gpas-step-card" data-step="2">
+        <div class="gpas-step-header">
+          <div class="step-icon" style="background:linear-gradient(135deg,#3b82f6,#2563eb);">🧠</div>
+          <div class="step-meta">
+            <h3>Step 2: Processing — คิดวิเคราะห์ สรุปความรู้</h3>
+            <small>ชั่วโมงที่ 3-4</small>
+          </div>
+          <span class="step-chevron">▼</span>
+        </div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <div class="step-ct-badges">
+              <span class="ct-badge">✅ ABSTRACTION</span>
+              <span class="ct-badge">✅ ALGORITHM DESIGN</span>
+            </div>
+            <ul class="step-activities">
+              <li><strong>Abstract:</strong> วาด Blueprint แบบแปลนเมืองบนกระดาษกราฟ</li>
+              <li><strong>Algorithm:</strong> เขียนขั้นตอนการสร้าง Step-by-Step (Pseudocode)</li>
+              <li>คำนวณจำนวนบล็อกที่ต้องใช้ (พหุปัญญาด้านตรรกะ-คณิตศาสตร์)</li>
+              <li>เรียนรู้ Redstone เบื้องต้น: Lever, Button, Dust, Repeater, Piston</li>
+              <li>ฝึกสร้างวงจร Redstone ง่าย ๆ (ประตูอัตโนมัติ)</li>
+              <li>เชื่อมโยง Redstone กับ Logic Gate: AND, OR, NOT</li>
+              <li>แบ่งบทบาท: สถาปนิก, วิศวกร Redstone, ผู้จัดการทรัพยากร, ผู้บันทึก</li>
+            </ul>
+            <div class="mi-badges">
+              <span class="mi-badge">★ Logical-Mathematical</span>
+              <span class="mi-badge">Spatial</span>
+              <span class="mi-badge">Intrapersonal</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gpas-step-card" data-step="3">
+        <div class="gpas-step-header">
+          <div class="step-icon" style="background:linear-gradient(135deg,#10b981,#059669);">🔨</div>
+          <div class="step-meta">
+            <h3>Step 3: Applying 1 — ลงมือปฏิบัติ สรุปความรู้</h3>
+            <small>ชั่วโมงที่ 5-6</small>
+          </div>
+          <span class="step-chevron">▼</span>
+        </div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <div class="step-ct-badges">
+              <span class="ct-badge">✅ ALL 4 CT COMPONENTS</span>
+            </div>
+            <ul class="step-activities">
+              <li>เปิด LAN Server — ทุกกลุ่มสร้างเมืองพร้อมกัน Multiplayer</li>
+              <li>สร้างเมืองอัจฉริยะตามแบบแปลน: อาคาร 3+ หลัง, ถนน, สวน</li>
+              <li>สร้างระบบ Redstone อย่างน้อย 1 ระบบ (ประตูอัตโนมัติ/ระบบไฟ/สัญญาณเตือน)</li>
+              <li><strong>Debug:</strong> แก้ปัญหาที่เกิดขึ้น บันทึกปัญหาและวิธีแก้ไข</li>
+              <li>Mini Design Review ชั่วโมงละ 1 ครั้ง</li>
+            </ul>
+            <div class="mi-badges">
+              <span class="mi-badge">★ Logical-Mathematical</span>
+              <span class="mi-badge">Spatial</span>
+              <span class="mi-badge">Bodily-Kinesthetic</span>
+              <span class="mi-badge">Interpersonal</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gpas-step-card" data-step="4">
+        <div class="gpas-step-header">
+          <div class="step-icon" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);">📢</div>
+          <div class="step-meta">
+            <h3>Step 4: Applying 2 — สื่อสาร นำเสนอ</h3>
+            <small>ชั่วโมงที่ 7</small>
+          </div>
+          <span class="step-chevron">▼</span>
+        </div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <div class="step-ct-badges">
+              <span class="ct-badge">✅ COMMUNICATE CT KNOWLEDGE</span>
+            </div>
+            <ul class="step-activities">
+              <li>จัดเวที "Minecraft City Expo" — แต่ละกลุ่มนำเสนอ 5-7 นาที</li>
+              <li>Virtual Tour ใน Minecraft พาผู้ชมเยี่ยมชมเมือง</li>
+              <li>อธิบาย: แบบแปลน → กระบวนการสร้าง → ระบบ Redstone → แนวคิด CT</li>
+              <li>ประเมินผลงานกลุ่มอื่นด้วย Rubric (Peer Assessment)</li>
+              <li>ถ่ายภาพ/วิดีโอ Screenshot เป็น Portfolio</li>
+            </ul>
+            <div class="mi-badges">
+              <span class="mi-badge">★ Logical-Mathematical</span>
+              <span class="mi-badge">Linguistic</span>
+              <span class="mi-badge">Interpersonal</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gpas-step-card" data-step="5">
+        <div class="gpas-step-header">
+          <div class="step-icon" style="background:linear-gradient(135deg,#ef4444,#dc2626);">🔄</div>
+          <div class="step-meta">
+            <h3>Step 5: Self-Regulating — ประเมินเพื่อเพิ่มคุณค่า</h3>
+            <small>ชั่วโมงที่ 8</small>
+          </div>
+          <span class="step-chevron">▼</span>
+        </div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <div class="step-ct-badges">
+              <span class="ct-badge">✅ EVALUATE & IMPROVE ALGORITHM</span>
+            </div>
+            <ul class="step-activities">
+              <li>ทำแบบทดสอบหลังเรียน (CT Assessment)</li>
+              <li>เขียนบันทึกสะท้อนคิด: อะไรดี? อะไรปรับ? CT ช่วยชีวิตจริงอย่างไร?</li>
+              <li>อภิปรายร่วม: เชื่อมโยง CT กับอาชีพ (สถาปนิก วิศวกร โปรแกรมเมอร์)</li>
+              <li><strong>ขยายผลสู่ชุมชน:</strong> จัดนิทรรศการให้ระดับชั้นอื่นเยี่ยมชม</li>
+              <li>เขียนคู่มือ "สอนน้อง" สำหรับ ป.4-5</li>
+            </ul>
+            <div class="mi-badges">
+              <span class="mi-badge">★ Logical-Mathematical</span>
+              <span class="mi-badge">Intrapersonal</span>
+              <span class="mi-badge">Interpersonal</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- INDICATORS -->
+<section id="indicators" class="section section-anchor">
+  <div class="mc-panel reveal">
+    <div class="pixel-heading">🎯 SECTION 04 — <span style="color:var(--gold)">ตัวชี้วัด ว 4.2 ป.6</span></div>
+    <div class="panel-title">เชื่อมโยงตัวชี้วัดกับกิจกรรม Minecraft</div>
+    <div class="indicators-grid">
+      <div class="indicator-card reveal">
+        <span class="ind-code">ป.6/1</span>
+        <h4>ใช้เหตุผลเชิงตรรกะในการอธิบายและออกแบบวิธีการแก้ปัญหาที่พบในชีวิตประจำวัน</h4>
+        <div class="mc-activity">🎮 วางแผนออกแบบสิ่งก่อสร้าง ใช้เงื่อนไขและการวนซ้ำในการสร้าง</div>
+      </div>
+      <div class="indicator-card reveal">
+        <span class="ind-code">ป.6/2</span>
+        <h4>ออกแบบและเขียนโปรแกรมอย่างง่าย ตรวจหาข้อผิดพลาดของโปรแกรม และแก้ไข</h4>
+        <div class="mc-activity">🔴 ออกแบบวงจร Redstone (Logic Gate) ตรวจสอบและ Debug ข้อผิดพลาด</div>
+      </div>
+      <div class="indicator-card reveal">
+        <span class="ind-code">ป.6/3</span>
+        <h4>ใช้อินเทอร์เน็ตในการค้นหาข้อมูลอย่างมีประสิทธิภาพ</h4>
+        <div class="mc-activity">🔎 ค้นคว้าข้อมูล Smart City เพื่อออกแบบโครงสร้างและวางแผนการสร้าง</div>
+      </div>
+      <div class="indicator-card reveal">
+        <span class="ind-code">ป.6/4</span>
+        <h4>ใช้เทคโนโลยีสารสนเทศทำงานร่วมกันอย่างปลอดภัย</h4>
+        <div class="mc-activity">👥 เล่น Multiplayer ร่วมกัน เคารพกฎกติกาและสิทธิ์ของผู้อื่นในเกม</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CT MATRIX -->
+<section id="matrix" class="section section-anchor">
+  <div class="mc-panel diamond-border reveal">
+    <div class="pixel-heading">⚡ SECTION 05 — <span style="color:var(--diamond)">CT × Minecraft Activity Matrix</span></div>
+    <div class="panel-title">แผนผังเชื่อมโยง Computational Thinking กับกิจกรรม</div>
+
+    <div class="ct-matrix">
+      <table>
+        <thead>
+          <tr>
+            <th>องค์ประกอบ CT</th>
+            <th>สำรวจเมือง</th>
+            <th>วาด Blueprint</th>
+            <th>เขียน Algorithm</th>
+            <th>สร้าง Redstone</th>
+            <th>Build & Debug</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="ct-name">🔍 Decomposition</td>
+            <td class="check">✔</td>
+            <td class="check">✔</td>
+            <td></td>
+            <td></td>
+            <td class="check">✔</td>
+          </tr>
+          <tr>
+            <td class="ct-name">🔁 Pattern Recognition</td>
+            <td class="check">✔</td>
+            <td class="check">✔</td>
+            <td></td>
+            <td class="check">✔</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td class="ct-name">💡 Abstraction</td>
+            <td></td>
+            <td class="check">✔</td>
+            <td class="check">✔</td>
+            <td></td>
+            <td class="check">✔</td>
+          </tr>
+          <tr>
+            <td class="ct-name">📋 Algorithm Design</td>
+            <td></td>
+            <td></td>
+            <td class="check">✔</td>
+            <td class="check">✔</td>
+            <td class="check">✔</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results" class="section section-anchor">
+  <div class="mc-panel redstone-border reveal">
+    <div class="pixel-heading">📊 SECTION 06 — <span style="color:var(--redstone)">ผลการดำเนินงาน</span></div>
+    <div class="panel-title">ทักษะ CT ก่อนเรียน vs หลังเรียน</div>
+
+    <div class="result-bars">
+      <div class="result-bar-item reveal">
+        <div class="bar-header"><span class="bar-name">🔍 Decomposition</span><span class="bar-val">82%</span></div>
+        <div class="bar-track"><div class="bar-fill" data-width="82" style="background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div></div>
+      </div>
+      <div class="result-bar-item reveal">
+        <div class="bar-header"><span class="bar-name">🔁 Pattern Recognition</span><span class="bar-val">78%</span></div>
+        <div class="bar-track"><div class="bar-fill" data-width="78" style="background:linear-gradient(90deg,#10b981,#34d399);"></div></div>
+      </div>
+      <div class="result-bar-item reveal">
+        <div class="bar-header"><span class="bar-name">💡 Abstraction</span><span class="bar-val">75%</span></div>
+        <div class="bar-track"><div class="bar-fill" data-width="75" style="background:linear-gradient(90deg,#3b82f6,#60a5fa);"></div></div>
+      </div>
+      <div class="result-bar-item reveal">
+        <div class="bar-header"><span class="bar-name">📋 Algorithm Design</span><span class="bar-val">85%</span></div>
+        <div class="bar-track"><div class="bar-fill" data-width="85" style="background:linear-gradient(90deg,#8b5cf6,#a78bfa);"></div></div>
+      </div>
+      <div class="result-bar-item reveal">
+        <div class="bar-header"><span class="bar-name">⭐ เจตคติต่อการเรียน CT</span><span class="bar-val">92%</span></div>
+        <div class="bar-track"><div class="bar-fill" data-width="92" style="background:linear-gradient(90deg,var(--emerald),#5ff590);"></div></div>
+      </div>
+    </div>
+
+    <div class="compare-grid reveal">
+      <div class="compare-card before">
+        <span class="cmp-label">❌ BEFORE</span>
+        <span class="cmp-value">48%</span>
+        <span class="cmp-desc">คะแนนเฉลี่ย CT ก่อนเรียน</span>
+      </div>
+      <div class="compare-card after">
+        <span class="cmp-label">✅ AFTER</span>
+        <span class="cmp-value">82%</span>
+        <span class="cmp-desc">คะแนนเฉลี่ย CT หลังเรียน</span>
+      </div>
+    </div>
+    <p style="text-align:center;color:var(--text-dim);font-size:0.8rem;margin-top:8px;">* ข้อมูลตัวอย่าง — กรอกข้อมูลจริงจากผลการวิจัย</p>
+  </div>
+</section>
+
+<!-- SUCCESS FACTORS & LESSONS -->
+<section id="success" class="section section-anchor">
+  <div class="mc-panel reveal">
+    <div class="pixel-heading">⭐ SECTION 07 — <span style="color:var(--emerald)">ปัจจัยความสำเร็จ</span></div>
+    <div class="panel-title">อะไรทำให้นวัตกรรมนี้สำเร็จ?</div>
+
+    <div class="success-grid">
+      <div class="success-card reveal"><span class="sc-icon">🎮</span><h4>Game = Motivation</h4><p>Minecraft สร้างแรงจูงใจภายในอย่างทรงพลัง นักเรียนที่เคยไม่สนใจ กลับกระตือรือร้น</p></div>
+      <div class="success-card reveal"><span class="sc-icon">🔴</span><h4>Redstone = Coding Bridge</h4><p>ระบบ Redstone เปรียบเสมือน "โปรแกรมมิ่งแบบ Physical" — Bridge สู่ Coding จริง</p></div>
+      <div class="success-card reveal"><span class="sc-icon">📐</span><h4>GPAS = Structure</h4><p>กรอบ GPAS 5 Steps ทำให้ "การเล่นเกม" กลายเป็น "การเรียนรู้อย่างมีระบบ"</p></div>
+      <div class="success-card reveal"><span class="sc-icon">👫</span><h4>Peer Teaching</h4><p>นักเรียนที่เก่ง Minecraft เป็น "ครูน้อย" ช่วยสอนเพื่อน — พัฒนาทั้งผู้สอนและผู้เรียน</p></div>
+      <div class="success-card reveal"><span class="sc-icon">🧠</span><h4>CT ซ่อนอยู่ทุกขั้นตอน</h4><p>นักเรียนใช้ Decomposition, Pattern, Abstraction, Algorithm โดยไม่รู้ตัว!</p></div>
+      <div class="success-card reveal"><span class="sc-icon">🏫</span><h4>ผู้บริหารสนับสนุน</h4><p>ห้อง Lab พร้อมเครื่อง, LAN Server มั่นคง, PLC แลกเปลี่ยนเรียนรู้</p></div>
+    </div>
+  </div>
+
+  <div class="mc-panel gold-border reveal" style="margin-top:24px;">
+    <div class="pixel-heading">📚 <span style="color:var(--gold)">บทเรียนที่ได้รับ (Lessons Learned)</span></div>
+
+    <div class="lesson-accordion">
+      <div class="lesson-item">
+        <div class="lesson-header">
+          <span class="lesson-num">#1</span>
+          <span class="lesson-title">นักเรียนไม่มีประสบการณ์ Minecraft → จัด Tutorial + Buddy System</span>
+          <span class="lesson-chevron">▼</span>
+        </div>
+        <div class="lesson-body"><div class="lesson-body-inner">จัดกิจกรรม Tutorial ก่อนเริ่มหน่วยการเรียนรู้ 1 ชั่วโมง และจับคู่ Buddy ให้นักเรียนที่เก่ง Minecraft ช่วยสอนเพื่อน ผลคือนักเรียนทุกคนสามารถใช้งาน Minecraft ได้ภายใน 1 ชั่วโมง</div></div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-header">
+          <span class="lesson-num">#2</span>
+          <span class="lesson-title">เพลิดเพลินจนลืมเป้าหมาย → Timer + Design Review + Rubric</span>
+          <span class="lesson-chevron">▼</span>
+        </div>
+        <div class="lesson-body"><div class="lesson-body-inner">ใช้ Timer แจ้งเตือนทุก 15 นาที จัด Mini Design Review ให้กลุ่มรายงานความคืบหน้า และแจก Rubric ตั้งแต่ต้น ทำให้นักเรียนรู้ว่าจะถูกประเมินอะไร จึงมุ่งเน้นไปที่เป้าหมาย</div></div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-header">
+          <span class="lesson-num">#3</span>
+          <span class="lesson-title">คอมพิวเตอร์ช้า → ปรับ Graphics + Texture Pack เบา</span>
+          <span class="lesson-chevron">▼</span>
+        </div>
+        <div class="lesson-body"><div class="lesson-body-inner">ปรับ Render Distance เหลือ 8 chunks, ปิด Fancy Graphics, ใช้ OptiFine Mod ช่วยเพิ่ม FPS ผลคือเครื่องที่ช้าที่สุดยังทำงานได้ราบรื่น</div></div>
+      </div>
+      <div class="lesson-item">
+        <div class="lesson-header">
+          <span class="lesson-num">#4</span>
+          <span class="lesson-title">LAN ขัดข้อง → Backup World + Plan B</span>
+          <span class="lesson-chevron">▼</span>
+        </div>
+        <div class="lesson-body"><div class="lesson-body-inner">เตรียม Backup World ทุกชั่วโมง และมี Plan B ให้ทำงาน Single Player ได้ในกรณี LAN ขัดข้อง เตรียม Hotspot จากมือถือไว้สำรอง</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPREAD -->
+<section id="spread" class="section section-anchor">
+  <div class="mc-panel reveal">
+    <div class="pixel-heading">🌍 SECTION 08 — <span style="color:var(--emerald)">การเผยแพร่และขยายผล</span></div>
+    <div class="panel-title">จากห้องเรียนสู่ชุมชน</div>
+
+    <div class="spread-timeline">
+      <div class="timeline-item reveal">
+        <div class="timeline-dot" style="background:var(--grass-top);">📍</div>
+        <div class="timeline-content">
+          <h4>ระดับห้องเรียน</h4>
+          <p>ทดลองใช้กับนักเรียน ป.6 จำนวน 8 ชั่วโมง พร้อมเก็บข้อมูลวิจัย</p>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot" style="background:var(--diamond);">🏫</div>
+        <div class="timeline-content">
+          <h4>ระดับโรงเรียน</h4>
+          <p>จัดนิทรรศการ "Minecraft City Expo" — นักเรียนทุกระดับชั้นมาเยี่ยมชม</p>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot" style="background:var(--gold);">👨‍👩‍👧‍👦</div>
+        <div class="timeline-content">
+          <h4>ระดับชุมชน</h4>
+          <p>เชิญผู้ปกครองร่วมชมผลงาน สร้างความเข้าใจว่า "เกม = การเรียนรู้"</p>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot" style="background:var(--redstone);">🔄</div>
+        <div class="timeline-content">
+          <h4>ระดับเครือข่าย PLC</h4>
+          <p>นำเสนอในที่ประชุม PLC กลุ่มโรงเรียน แลกเปลี่ยนเรียนรู้กับเพื่อนครู</p>
+        </div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-dot" style="background:var(--emerald);">🏆</div>
+        <div class="timeline-content">
+          <h4>ระดับเขตพื้นที่ / ภาค / ชาติ</h4>
+          <p>ส่งประกวด OBEC Awards — เผยแพร่ผ่านเว็บไซต์โรงเรียน, เอกสารวิชาการ</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <div class="footer-pixel">
+    BEST PRACTICE: CT × MINECRAFT × GPAS 5 STEPS<br>
+    กลุ่มสาระวิทยาศาสตร์และเทคโนโลยี (วิทยาการคำนวณ)<br>
+    ชั้นประถมศึกษาปีที่ 6 · สังกัด สพป.<br><br>
+    CRAFTED WITH ❤️ FOR OBEC AWARDS
+  </div>
+</footer>
+
+<script>
+// ===== TYPING ANIMATION =====
+const typingEl = document.getElementById('hero-typing');
+const phrases = [
+  'Decomposition → แยกย่อยปัญหาเป็นส่วนย่อย',
+  'Pattern Recognition → จดจำรูปแบบที่ซ้ำกัน',
+  'Abstraction → มุ่งเน้นสิ่งสำคัญ',
+  'Algorithm Design → ออกแบบขั้นตอนการทำงาน',
+  'GPAS 5 Steps → Active Learning ที่มีพลัง'
+];
+let phraseIdx = 0, charIdx = 0, isDeleting = false;
+
+function typeLoop() {
+  const current = phrases[phraseIdx];
+  if (!isDeleting) {
+    typingEl.textContent = current.substring(0, charIdx + 1);
+    charIdx++;
+    if (charIdx === current.length) {
+      setTimeout(() => { isDeleting = true; typeLoop(); }, 2000);
+      return;
+    }
+    setTimeout(typeLoop, 50);
+  } else {
+    typingEl.textContent = current.substring(0, charIdx - 1);
+    charIdx--;
+    if (charIdx === 0) {
+      isDeleting = false;
+      phraseIdx = (phraseIdx + 1) % phrases.length;
+      setTimeout(typeLoop, 400);
+      return;
+    }
+    setTimeout(typeLoop, 25);
+  }
+}
+typeLoop();
+
+// ===== STARS =====
+const starsEl = document.getElementById('stars');
+for (let i = 0; i < 100; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  s.style.left = Math.random() * 100 + '%';
+  s.style.top = Math.random() * 60 + '%';
+  s.style.animationDelay = Math.random() * 2 + 's';
+  s.style.width = s.style.height = (Math.random() * 2 + 1) + 'px';
+  starsEl.appendChild(s);
+}
+
+// ===== SKY / DAY-NIGHT CYCLE =====
+const sky = document.getElementById('sky');
+const stars = document.getElementById('stars');
+const sunMoon = document.getElementById('sun-moon');
+const docH = () => document.documentElement.scrollHeight - window.innerHeight;
+
+function updateSky() {
+  const p = Math.min(window.scrollY / (docH() || 1), 1);
+
+  if (p < 0.15) {
+    // Morning
+    sky.style.background = 'linear-gradient(180deg, #87CEEB 0%, #b8e4f9 40%, #d4edda 90%)';
+    stars.style.opacity = 0;
+    sunMoon.style.background = '#FFD700';
+    sunMoon.style.borderRadius = '0';
+    sunMoon.style.boxShadow = '0 0 30px rgba(255,215,0,0.5)';
+    sunMoon.textContent = '';
+    const sunY = 30 + p * 100;
+    sunMoon.style.top = sunY + 'px';
+    sunMoon.style.right = '15%';
+  } else if (p < 0.4) {
+    // Afternoon
+    const t = (p - 0.15) / 0.25;
+    sky.style.background = `linear-gradient(180deg, 
+      hsl(${195 - t*150}, ${70 - t*20}%, ${70 - t*20}%) 0%, 
+      hsl(${40 - t*10}, ${80}%, ${70 - t*20}%) 50%,
+      hsl(${20}, ${70}%, ${50 - t*10}%) 100%)`;
+    stars.style.opacity = t * 0.3;
+    sunMoon.style.background = `hsl(${40 - t*20}, 100%, ${50 + t*10}%)`;
+    sunMoon.style.top = (130 + t * 100) + 'px';
+  } else if (p < 0.6) {
+    // Sunset
+    const t = (p - 0.4) / 0.2;
+    sky.style.background = `linear-gradient(180deg, 
+      hsl(${240 + t*20}, ${40 + t*30}%, ${20 + t*5}%) 0%, 
+      hsl(${15}, ${70 - t*30}%, ${35 - t*15}%) 40%,
+      hsl(${200}, ${30}%, ${15}%) 100%)`;
+    stars.style.opacity = 0.3 + t * 0.7;
+    sunMoon.style.background = `hsl(${20}, ${60 - t*60}%, ${50 - t*30}%)`;
+    sunMoon.style.top = (230 + t * 100) + 'px';
+  } else {
+    // Night
+    const t = (p - 0.6) / 0.4;
+    sky.style.background = `linear-gradient(180deg, 
+      hsl(${240}, ${50}%, ${8 + t*2}%) 0%, 
+      hsl(${220}, ${40}%, ${12 + t*3}%) 50%,
+      hsl(${200}, ${30}%, ${10 + t*2}%) 100%)`;
+    stars.style.opacity = 1;
+    // Moon
+    sunMoon.style.background = '#e8e8d0';
+    sunMoon.style.boxShadow = '0 0 20px rgba(232,232,208,0.3)';
+    sunMoon.style.top = (40 + Math.sin(t * Math.PI) * 50) + 'px';
+    sunMoon.style.right = (10 + t * 20) + '%';
+  }
+}
+
+// ===== TERRAIN CANVAS =====
+const terrainCanvas = document.getElementById('terrain');
+const ctx = terrainCanvas.getContext('2d');
+
+function drawTerrain() {
+  const w = terrainCanvas.width = window.innerWidth;
+  const h = terrainCanvas.height = 120;
+  ctx.clearRect(0, 0, w, h);
+
+  const blockSize = 16;
+  const cols = Math.ceil(w / blockSize) + 1;
+
+  // Grass layer
+  for (let c = 0; c < cols; c++) {
+    const yOff = Math.sin(c * 0.3) * 8;
+    // Grass top
+    ctx.fillStyle = '#7EC850';
+    ctx.fillRect(c * blockSize, 20 + yOff, blockSize, blockSize);
+    // Dirt
+    ctx.fillStyle = '#8B6914';
+    ctx.fillRect(c * blockSize, 20 + yOff + blockSize, blockSize, blockSize);
+    ctx.fillStyle = '#7A5C12';
+    ctx.fillRect(c * blockSize, 20 + yOff + blockSize * 2, blockSize, blockSize);
+    // Stone
+    ctx.fillStyle = '#6B6B6B';
+    ctx.fillRect(c * blockSize, 20 + yOff + blockSize * 3, blockSize, blockSize * 3);
+  }
+}
+drawTerrain();
+window.addEventListener('resize', drawTerrain);
+
+// ===== XP BAR =====
+const xpFill = document.getElementById('xp-bar-fill');
+const xpLevel = document.getElementById('xp-level');
+const sections = ['hero','background','framework','gpas','indicators','matrix','results','success','spread'];
+
+function updateXP() {
+  const p = Math.min(window.scrollY / (docH() || 1), 1);
+  xpFill.style.width = (p * 100) + '%';
+  const lvl = Math.floor(p * sections.length);
+  xpLevel.textContent = 'Lv. ' + lvl;
+}
+
+// ===== HOTBAR ACTIVE STATE =====
+function updateHotbar() {
+  const scrollY = window.scrollY + window.innerHeight / 3;
+  let current = 'hero';
+
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.offsetTop <= scrollY) current = id;
+  });
+
+  document.querySelectorAll('.hotbar-slot').forEach(slot => {
+    slot.classList.toggle('active', slot.dataset.section === current);
+  });
+}
+
+// ===== ACHIEVEMENTS =====
+const achievements = {
+  background: { icon: '📋', text: 'เข้าใจปัญหาแล้ว!' },
+  framework: { icon: '🧩', text: 'ค้นพบสูตรนวัตกรรม!' },
+  gpas: { icon: '📐', text: 'เรียนรู้ GPAS 5 Steps แล้ว!' },
+  indicators: { icon: '🎯', text: 'เชื่อมโยงตัวชี้วัดสำเร็จ!' },
+  matrix: { icon: '⚡', text: 'ถอดรหัส CT × Minecraft!' },
+  results: { icon: '📊', text: 'วิเคราะห์ผลลัพธ์แล้ว!' },
+  success: { icon: '⭐', text: 'ค้นพบปัจจัยความสำเร็จ!' },
+  spread: { icon: '🌍', text: 'พร้อมเผยแพร่สู่สังคม!' }
+};
+const shownAch = new Set();
+const achEl = document.getElementById('achievement');
+const achText = document.getElementById('ach-text');
+let achTimer = null;
+
+function showAchievement(id) {
+  if (shownAch.has(id) || !achievements[id]) return;
+  shownAch.add(id);
+  const a = achievements[id];
+  achEl.querySelector('.ach-icon').textContent = a.icon;
+  achText.textContent = a.text;
+  achEl.classList.add('show');
+  clearTimeout(achTimer);
+  achTimer = setTimeout(() => achEl.classList.remove('show'), 3000);
+}
+
+function checkAchievements() {
+  const scrollY = window.scrollY + window.innerHeight * 0.6;
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && scrollY >= el.offsetTop && id !== 'hero') {
+      showAchievement(id);
+    }
+  });
+}
+
+// ===== SCROLL REVEAL =====
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ===== ANIMATED COUNTERS =====
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target;
+    const target = parseInt(el.dataset.target);
+    if (!target || el.dataset.counted) return;
+    el.dataset.counted = '1';
+    let current = 0;
+    const step = target / 40;
+    const interval = setInterval(() => {
+      current += step;
+      if (current >= target) { current = target; clearInterval(interval); }
+      el.textContent = Math.round(current);
+    }, 30);
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('[data-target]').forEach(el => counterObserver.observe(el));
+
+// ===== ANIMATED BARS =====
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const bar = e.target;
+    if (bar.dataset.animated) return;
+    bar.dataset.animated = '1';
+    setTimeout(() => {
+      bar.style.width = bar.dataset.width + '%';
+    }, 200);
+  });
+}, { threshold: 0.3 });
+
+document.querySelectorAll('.bar-fill').forEach(el => barObserver.observe(el));
+
+// ===== GPAS STEP EXPAND =====
+document.querySelectorAll('.gpas-step-header').forEach(header => {
+  header.addEventListener('click', () => {
+    const card = header.parentElement;
+    const body = card.querySelector('.step-body');
+    const inner = card.querySelector('.step-body-inner');
+    const isOpen = card.classList.contains('open');
+
+    // Close all
+    document.querySelectorAll('.gpas-step-card').forEach(c => {
+      c.classList.remove('open');
+      c.querySelector('.step-body').style.maxHeight = '0';
+    });
+
+    if (!isOpen) {
+      card.classList.add('open');
+      body.style.maxHeight = inner.scrollHeight + 40 + 'px';
+    }
+  });
+});
+
+// ===== LESSON ACCORDION =====
+document.querySelectorAll('.lesson-header').forEach(header => {
+  header.addEventListener('click', () => {
+    const item = header.parentElement;
+    const body = item.querySelector('.lesson-body');
+    const inner = item.querySelector('.lesson-body-inner');
+    const isOpen = item.classList.contains('open');
+
+    document.querySelectorAll('.lesson-item').forEach(i => {
+      i.classList.remove('open');
+      i.querySelector('.lesson-body').style.maxHeight = '0';
+    });
+
+    if (!isOpen) {
+      item.classList.add('open');
+      body.style.maxHeight = inner.scrollHeight + 20 + 'px';
+    }
+  });
+});
+
+// ===== KEYBOARD HOTBAR =====
+document.addEventListener('keydown', (e) => {
+  const num = parseInt(e.key);
+  if (num >= 1 && num <= 9) {
+    const slot = document.querySelectorAll('.hotbar-slot')[num - 1];
+    if (slot) slot.click();
+  }
+});
+
+// ===== SCROLL HANDLER =====
+let ticking = false;
+window.addEventListener('scroll', () => {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      updateSky();
+      updateXP();
+      updateHotbar();
+      checkAchievements();
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+
+// Initial
+updateSky();
+updateXP();
+updateHotbar();
+
+// Open first GPAS step by default
+setTimeout(() => {
+  const first = document.querySelector('.gpas-step-card');
+  if (first) {
+    first.classList.add('open');
+    first.querySelector('.step-body').style.maxHeight = first.querySelector('.step-body-inner').scrollHeight + 40 + 'px';
+  }
+}, 500);
+</script>
+</body>
+</html>
