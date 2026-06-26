@@ -839,12 +839,12 @@ main {
 .ct-matrix table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.85rem;
+  font-size: 1.05rem; /* Increased from 0.85rem */
   min-width: 600px;
 }
 
 .ct-matrix th, .ct-matrix td {
-  padding: 12px 14px;
+  padding: 16px 20px; /* Increased from 12px 14px */
   border: 1px solid #333;
   text-align: left;
 }
@@ -853,7 +853,7 @@ main {
   background: rgba(74,237,217,0.1);
   color: var(--diamond);
   font-weight: 700;
-  font-size: 0.8rem;
+  font-size: 1.1rem; /* Increased from 0.8rem */
   position: sticky;
   top: 0;
 }
@@ -872,7 +872,7 @@ main {
   white-space: nowrap;
 }
 
-.ct-matrix .check { color: var(--emerald); font-size: 1.1rem; }
+.ct-matrix .check { color: var(--emerald); font-size: 1.35rem; } /* Increased from 1.1rem */
 
 /* ========== INDICATORS ========== */
 .indicators-grid {
@@ -1038,9 +1038,9 @@ main {
   border-color: var(--emerald);
 }
 
-.success-card .sc-icon { font-size: 2rem; margin-bottom: 8px; display: block; }
-.success-card h4 { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
-.success-card p { font-size: 0.85rem; color: var(--text-dim); }
+.success-card .sc-icon { font-size: 2.2rem; margin-bottom: 8px; display: block; }
+.success-card h4 { font-size: 1.15rem; font-weight: 800; margin-bottom: 8px; }
+.success-card p { font-size: 1rem; color: var(--text-dim); }
 
 /* ========== LESSONS ========== */
 .lesson-accordion { margin: 24px 0; }
@@ -1072,7 +1072,7 @@ main {
   flex-shrink: 0;
 }
 
-.lesson-header .lesson-title { font-weight: 600; flex: 1; }
+.lesson-header .lesson-title { font-weight: 700; flex: 1; font-size: 1.1rem; }
 .lesson-header .lesson-chevron { color: #666; transition: transform 0.3s; }
 
 .lesson-item.open .lesson-chevron { transform: rotate(180deg); color: var(--gold); }
@@ -1086,7 +1086,7 @@ main {
 .lesson-body-inner {
   padding: 0 20px 16px;
   color: var(--text-dim);
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   line-height: 1.8;
 }
 
@@ -1112,8 +1112,8 @@ main {
   box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
 }
 
-.timeline-content h4 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
-.timeline-content p { font-size: 0.85rem; color: var(--text-dim); }
+.timeline-content h4 { font-size: 1.15rem; font-weight: 700; margin-bottom: 4px; }
+.timeline-content p { font-size: 1rem; color: var(--text-dim); }
 
 /* ========== FOOTER ========== */
 #footer {
@@ -1643,12 +1643,12 @@ main {
     <div class="panel-title">อะไรทำให้นวัตกรรมนี้สำเร็จ?</div>
 
     <div class="success-grid">
-      <div class="success-card reveal"><span class="sc-icon">🎮</span><h4>Game = Motivation</h4><p>Minecraft สร้างแรงจูงใจภายในอย่างทรงพลัง นักเรียนที่เคยไม่สนใจ กลับกระตือรือร้น</p></div>
-      <div class="success-card reveal"><span class="sc-icon">🔴</span><h4>Redstone = Coding Bridge</h4><p>ระบบ Redstone เปรียบเสมือน "โปรแกรมมิ่งแบบ Physical" — Bridge สู่ Coding จริง</p></div>
-      <div class="success-card reveal"><span class="sc-icon">📐</span><h4>GPAS = Structure</h4><p>กรอบ GPAS 5 Steps ทำให้ "การเล่นเกม" กลายเป็น "การเรียนรู้อย่างมีระบบ"</p></div>
-      <div class="success-card reveal"><span class="sc-icon">👫</span><h4>Peer Teaching</h4><p>นักเรียนที่เก่ง Minecraft เป็น "ครูน้อย" ช่วยสอนเพื่อน — พัฒนาทั้งผู้สอนและผู้เรียน</p></div>
-      <div class="success-card reveal"><span class="sc-icon">🧠</span><h4>CT ซ่อนอยู่ทุกขั้นตอน</h4><p>นักเรียนใช้ Decomposition, Pattern, Abstraction, Algorithm โดยไม่รู้ตัว!</p></div>
-      <div class="success-card reveal"><span class="sc-icon">🏫</span><h4>ผู้บริหารสนับสนุน</h4><p>ห้อง Lab พร้อมเครื่อง, LAN Server มั่นคง, PLC แลกเปลี่ยนเรียนรู้</p></div>
+      <div class="success-card reveal"><span class="sc-icon">🎮</span><h4>Game = Motivation</h4><p>Minecraft กระตุ้นแรงจูงใจและการเรียนรู้ของนักเรียนอย่างยั่งยืน</p></div>
+      <div class="success-card reveal"><span class="sc-icon">🔴</span><h4>Redstone = Coding Bridge</h4><p>วงจร Redstone เชื่อมโยงระบบตรรกะไฟฟ้าสู่ทักษะการเขียนโปรแกรมจริง</p></div>
+      <div class="success-card reveal"><span class="sc-icon">📐</span><h4>GPAS = Structure</h4><p>กรอบ GPAS 5 Steps จัดระเบียบการเล่นเกมให้อยู่ในระบบการเรียนรู้เชิงลึก</p></div>
+      <div class="success-card reveal"><span class="sc-icon">👫</span><h4>Peer Teaching</h4><p>ระบบบัดดี้ (Buddy) ช่วยพัฒนาทักษะการทำงานร่วมกันและภาวะผู้นำ</p></div>
+      <div class="success-card reveal"><span class="sc-icon">🧠</span><h4>CT ซ่อนอยู่ทุกขั้นตอน</h4><p>ฝึกกระบวนการคิดเชิงคำนวณและแก้ปัญหาผ่านภารกิจอย่างเป็นธรรมชาติ</p></div>
+      <div class="success-card reveal"><span class="sc-icon">🏫</span><h4>ผู้บริหารสนับสนุน</h4><p>ความพร้อมของเครื่องคอมพิวเตอร์ เซิร์ฟเวอร์ LAN และกลุ่ม PLC ในเครือข่าย</p></div>
     </div>
   </div>
 
@@ -1659,34 +1659,34 @@ main {
       <div class="lesson-item">
         <div class="lesson-header">
           <span class="lesson-num">#1</span>
-          <span class="lesson-title">นักเรียนไม่มีประสบการณ์ Minecraft → จัด Tutorial + Buddy System</span>
+          <span class="lesson-title">นักเรียนยังไม่คุ้นชินเกม → จัดสอนปฐมนิเทศเบื้องต้นพร้อมระบบบัดดี้ช่วยเหลือ</span>
           <span class="lesson-chevron">▼</span>
         </div>
-        <div class="lesson-body"><div class="lesson-body-inner">จัดกิจกรรม Tutorial ก่อนเริ่มหน่วยการเรียนรู้ 1 ชั่วโมง และจับคู่ Buddy ให้นักเรียนที่เก่ง Minecraft ช่วยสอนเพื่อน ผลคือนักเรียนทุกคนสามารถใช้งาน Minecraft ได้ภายใน 1 ชั่วโมง</div></div>
+        <div class="lesson-body"><div class="lesson-body-inner">จัดสอนการควบคุมและระบบพื้นฐาน 1 ชั่วโมง พร้อมจับคู่นักเรียนที่มีทักษะช่วยเหลือเพื่อน ทำให้นักเรียนใช้งานได้รวดเร็ว</div></div>
       </div>
       <div class="lesson-item">
         <div class="lesson-header">
           <span class="lesson-num">#2</span>
-          <span class="lesson-title">เพลิดเพลินจนลืมเป้าหมาย → Timer + Design Review + Rubric</span>
+          <span class="lesson-title">ผู้เรียนหลุดจากเป้าหมายการประเมิน → กำหนดเวลาและเกณฑ์ Rubric ที่ชัดเจน</span>
           <span class="lesson-chevron">▼</span>
         </div>
-        <div class="lesson-body"><div class="lesson-body-inner">ใช้ Timer แจ้งเตือนทุก 15 นาที จัด Mini Design Review ให้กลุ่มรายงานความคืบหน้า และแจก Rubric ตั้งแต่ต้น ทำให้นักเรียนรู้ว่าจะถูกประเมินอะไร จึงมุ่งเน้นไปที่เป้าหมาย</div></div>
+        <div class="lesson-body"><div class="lesson-body-inner">แจ้งเตือนเวลาสร้างสรรค์ทุก 15 นาที นำเสนอความก้าวหน้าย่อย และประเมินด้วยเกณฑ์ที่มอบหมายเพื่อคงจุดสนใจของกลุ่ม</div></div>
       </div>
       <div class="lesson-item">
         <div class="lesson-header">
           <span class="lesson-num">#3</span>
-          <span class="lesson-title">คอมพิวเตอร์ช้า → ปรับ Graphics + Texture Pack เบา</span>
+          <span class="lesson-title">ประสิทธิภาพของเครื่องต่ำ → ปรับตั้งค่ากราฟิกและลดระยะการแสดงผล</span>
           <span class="lesson-chevron">▼</span>
         </div>
-        <div class="lesson-body"><div class="lesson-body-inner">ปรับ Render Distance เหลือ 8 chunks, ปิด Fancy Graphics, ใช้ OptiFine Mod ช่วยเพิ่ม FPS ผลคือเครื่องที่ช้าที่สุดยังทำงานได้ราบรื่น</div></div>
+        <div class="lesson-body"><div class="lesson-body-inner">ลดระยะ Render Distance เหลือ 8 chunks ปิดเอฟเฟกต์ Fancy Graphics เพื่อป้องกันเครื่องประมวลผลกระตุก</div></div>
       </div>
       <div class="lesson-item">
         <div class="lesson-header">
           <span class="lesson-num">#4</span>
-          <span class="lesson-title">LAN ขัดข้อง → Backup World + Plan B</span>
+          <span class="lesson-title">การเชื่อมต่อเครือข่ายขัดข้อง → สำรองไฟล์ข้อมูลและเตรียมแผนสแตนด์บาย</span>
           <span class="lesson-chevron">▼</span>
         </div>
-        <div class="lesson-body"><div class="lesson-body-inner">เตรียม Backup World ทุกชั่วโมง และมี Plan B ให้ทำงาน Single Player ได้ในกรณี LAN ขัดข้อง เตรียม Hotspot จากมือถือไว้สำรอง</div></div>
+        <div class="lesson-body"><div class="lesson-body-inner">สำรองไฟล์แผนที่สร้างสรรค์สม่ำเสมอทุกชั่วโมง และเตรียมแผนเล่นเดี่ยวสแตนด์บายเผื่อเกิดเหตุขัดข้องของระบบแลน</div></div>
       </div>
     </div>
   </div>
@@ -1735,6 +1735,19 @@ main {
         </div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- DEVELOPER PROFILE CARD -->
+<section id="presenter" style="margin: 32px 0 16px 0; display: flex; justify-content: center; animation: fadeUp 1s ease both;">
+  <div class="mc-panel reveal" style="max-width: 500px; width: 90vw; text-align: center; border-color: var(--gold-dark); background: rgba(0,0,0,0.55);">
+    <div class="pixel-heading" style="justify-content: center;">👤 DEVELOPER — <span style="color:var(--gold)">ผู้เสนอผลงาน</span></div>
+    <div style="margin: 20px auto; width: 140px; height: 180px; border: 3px solid var(--mc-border-dark); border-radius: 6px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+      <img src="teacher.jpg" alt="นายภาณธร ภรธนบูรณ์" style="width: 100%; height: 100%; object-fit: cover;">
+    </div>
+    <h3 style="font-size: 1.4rem; color: #ffffff; font-weight: 700; margin-bottom: 4px;">นายภาณธร ภรธนบูรณ์</h3>
+    <p style="color: var(--gold); font-size: 1.1rem; font-weight: 600; margin-bottom: 2px;">ครู คศ.1</p>
+    <p style="color: var(--text-dim); font-size: 1rem;">โรงเรียนวัดบ้านรุน</p>
   </div>
 </section>
 
