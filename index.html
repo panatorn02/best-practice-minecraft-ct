@@ -456,6 +456,36 @@ main {
 
 @keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
 
+/* ===== MINECRAFT BUTTON ===== */
+.mc-btn {
+  display: inline-block;
+  padding: 10px 24px;
+  background: #5c8e32;
+  border: 3px solid #000000;
+  color: #ffffff !important;
+  font-family: var(--body);
+  font-size: 1rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.1s ease;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.15), inset -3px -3px 0px #2e5a15, inset 3px 3px 0px #83be53;
+  text-align: center;
+}
+
+.mc-btn:hover {
+  background: #6fa63c;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.25), inset -3px -3px 0px #3c6f1d, inset 3px 3px 0px #97d762;
+  transform: translateY(-2px);
+}
+
+.mc-btn:active {
+  background: #3f6822;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1), inset 3px 3px 0px #1c380c, inset -3px -3px 0px #52822d;
+  transform: translateY(1px);
+}
+
 .scroll-hint {
   position: absolute;
   bottom: 120px;
@@ -1222,6 +1252,11 @@ main {
       <span class="mc-tag green">MINECRAFT JAVA</span>
       <span class="mc-tag gold">GPAS 5 STEPS</span>
     </div>
+    <div style="margin-top: 28px; animation: fadeUp 1s ease 0.9s both; display: flex; justify-content: center;">
+      <a href="full_report.pdf" class="mc-btn" target="_blank">
+        📖 อ่านรายงานฉบับเต็ม (PDF)
+      </a>
+    </div>
   </div>
   <div class="scroll-hint">
     <span>SCROLL DOWN</span>
@@ -1337,12 +1372,10 @@ main {
               <span class="ct-badge">✅ PATTERN RECOGNITION</span>
             </div>
             <ul class="step-activities">
-              <li>ดูวิดีโอ "Smart City in Minecraft" เป็นแรงบันดาลใจ</li>
-              <li>เรียนรู้พื้นฐาน Minecraft: เคลื่อนที่ วางบล็อก Creative Mode</li>
-              <li>สำรวจ Minecraft World ที่ครูเตรียมไว้ (มีตัวอย่างเมืองสำเร็จ)</li>
-              <li><strong>Decompose:</strong> แยกย่อยเมืองเป็นส่วนประกอบ (ถนน บ้าน สวน ระบบไฟ)</li>
-              <li><strong>Pattern:</strong> จดจำรูปแบบการวางบล็อกที่ซ้ำ สมมาตร ลวดลาย</li>
-              <li>ค้นหาข้อมูล Smart Village จากอินเทอร์เน็ต (ว 4.2 ป.6/3)</li>
+              <li>สำรวจเมืองตัวอย่างใน Server LAN เพื่อสังเกตโครงสร้าง</li>
+              <li><strong>Decompose:</strong> แยกย่อยปัญหาความต้องการในการสร้างเมือง (ถนน อาคาร ระบบไฟ)</li>
+              <li><strong>Pattern:</strong> ค้นหารูปแบบสถาปัตยกรรมและลวดลายการวางบล็อกที่สมมาตร</li>
+              <li>ค้นคว้าข้อมูล Smart Village / Smart City จากอินเทอร์เน็ต</li>
             </ul>
             <div class="mi-badges">
               <span class="mi-badge">★ Logical-Mathematical</span>
@@ -1369,13 +1402,10 @@ main {
               <span class="ct-badge">✅ ALGORITHM DESIGN</span>
             </div>
             <ul class="step-activities">
-              <li><strong>Abstract:</strong> วาด Blueprint แบบแปลนเมืองบนกระดาษกราฟ</li>
-              <li><strong>Algorithm:</strong> เขียนขั้นตอนการสร้าง Step-by-Step (Pseudocode)</li>
-              <li>คำนวณจำนวนบล็อกที่ต้องใช้ (พหุปัญญาด้านตรรกะ-คณิตศาสตร์)</li>
-              <li>เรียนรู้ Redstone เบื้องต้น: Lever, Button, Dust, Repeater, Piston</li>
-              <li>ฝึกสร้างวงจร Redstone ง่าย ๆ (ประตูอัตโนมัติ)</li>
-              <li>เชื่อมโยง Redstone กับ Logic Gate: AND, OR, NOT</li>
-              <li>แบ่งบทบาท: สถาปนิก, วิศวกร Redstone, ผู้จัดการทรัพยากร, ผู้บันทึก</li>
+              <li><strong>Abstract:</strong> ออกแบบวาด Blueprint แบบแปลนเมือง Top-down ลงกระดาษกราฟ</li>
+              <li><strong>Algorithm:</strong> เขียนวิธีสร้างทีละสเต็ปในรูปแบบของรหัสจำลอง (Pseudocode)</li>
+              <li>ฝึกสร้างวงจรลอจิกพื้นฐาน (Logic Gate) ด้วยกลไกวงจร Redstone ในเกม</li>
+              <li>วางแผนสิทธิ์ผู้เล่นและแบ่งบทบาทหน้าที่การทำงานร่วมกันในทีม</li>
             </ul>
             <div class="mi-badges">
               <span class="mi-badge">★ Logical-Mathematical</span>
@@ -1401,11 +1431,9 @@ main {
               <span class="ct-badge">✅ ALL 4 CT COMPONENTS</span>
             </div>
             <ul class="step-activities">
-              <li>เปิด LAN Server — ทุกกลุ่มสร้างเมืองพร้อมกัน Multiplayer</li>
-              <li>สร้างเมืองอัจฉริยะตามแบบแปลน: อาคาร 3+ หลัง, ถนน, สวน</li>
-              <li>สร้างระบบ Redstone อย่างน้อย 1 ระบบ (ประตูอัตโนมัติ/ระบบไฟ/สัญญาณเตือน)</li>
-              <li><strong>Debug:</strong> แก้ปัญหาที่เกิดขึ้น บันทึกปัญหาและวิธีแก้ไข</li>
-              <li>Mini Design Review ชั่วโมงละ 1 ครั้ง</li>
+              <li>ลงมือสร้างเมืองอัจฉริยะร่วมกันบน Server LAN ตามแปลนที่วาดไว้</li>
+              <li>ติดตั้งระบบอัตโนมัติด้วย Redstone เช่น ประตูเซนเซอร์ หรือไฟสว่างเวลากลางคืน</li>
+              <li><strong>Debug:</strong> ทดลองใช้งานและไล่ตรวจหาข้อผิดพลาดของวงจรร่วมกัน</li>
             </ul>
             <div class="mi-badges">
               <span class="mi-badge">★ Logical-Mathematical</span>
@@ -1432,11 +1460,9 @@ main {
               <span class="ct-badge">✅ COMMUNICATE CT KNOWLEDGE</span>
             </div>
             <ul class="step-activities">
-              <li>จัดเวที "Minecraft City Expo" — แต่ละกลุ่มนำเสนอ 5-7 นาที</li>
-              <li>Virtual Tour ใน Minecraft พาผู้ชมเยี่ยมชมเมือง</li>
-              <li>อธิบาย: แบบแปลน → กระบวนการสร้าง → ระบบ Redstone → แนวคิด CT</li>
-              <li>ประเมินผลงานกลุ่มอื่นด้วย Rubric (Peer Assessment)</li>
-              <li>ถ่ายภาพ/วิดีโอ Screenshot เป็น Portfolio</li>
+              <li>จัดนิทรรศการ "Minecraft City Expo" นำเสนอผลงานในรูปแบบ Virtual Tour</li>
+              <li>อธิบายแนวคิดการออกแบบ เชื่อมโยงกับขั้นตอนการคิดเชิงคำนวณ (CT)</li>
+              <li>ประเมินผลงานของกลุ่มเพื่อนร่วมชั้นด้วยเกณฑ์ประเมินแบบ Rubric</li>
             </ul>
             <div class="mi-badges">
               <span class="mi-badge">★ Logical-Mathematical</span>
@@ -1462,11 +1488,9 @@ main {
               <span class="ct-badge">✅ EVALUATE & IMPROVE ALGORITHM</span>
             </div>
             <ul class="step-activities">
-              <li>ทำแบบทดสอบหลังเรียน (CT Assessment)</li>
-              <li>เขียนบันทึกสะท้อนคิด: อะไรดี? อะไรปรับ? CT ช่วยชีวิตจริงอย่างไร?</li>
-              <li>อภิปรายร่วม: เชื่อมโยง CT กับอาชีพ (สถาปนิก วิศวกร โปรแกรมเมอร์)</li>
-              <li><strong>ขยายผลสู่ชุมชน:</strong> จัดนิทรรศการให้ระดับชั้นอื่นเยี่ยมชม</li>
-              <li>เขียนคู่มือ "สอนน้อง" สำหรับ ป.4-5</li>
+              <li>ทำแบบประเมินหลังเรียนและเขียนบันทึกสะท้อนการเรียนรู้ (Reflection)</li>
+              <li>สรุปเปรียบเทียบแนวคิดระหว่างโลกของเกมและแนวทางการแก้ปัญหาในชีวิตจริง</li>
+              <li>ขยายผลโดยการเปิดนิทรรศการให้เพื่อนร่วมโรงเรียนเข้าชมและเขียนคู่มือส่งต่อ</li>
             </ul>
             <div class="mi-badges">
               <span class="mi-badge">★ Logical-Mathematical</span>
@@ -1713,6 +1737,13 @@ main {
     </div>
   </div>
 </section>
+
+<!-- DOWNLOAD BUTTON BEFORE FOOTER -->
+<div style="display: flex; justify-content: center; margin: 32px 0 16px 0; animation: fadeUp 1s ease both;">
+  <a href="full_report.pdf" class="mc-btn" target="_blank">
+    📖 ดาวน์โหลดเอกสารโครงการฉบับเต็ม (PDF)
+  </a>
+</div>
 
 </main>
 
