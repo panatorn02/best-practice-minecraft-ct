@@ -1039,78 +1039,30 @@ main {
   .compare-grid { grid-template-columns: 1fr; }
 }
 
-/* ========== SUCCESS FACTORS ========== */
-.success-grid {
+/* ========== LESSONS (SIMPLE) ========== */
+.lessons-simple-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px;
-  margin: 24px 0;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+  margin: 16px 0 0;
 }
 
-.success-card {
-  background: rgba(0,0,0,0.4);
-  border: 2px solid #333;
-  border-radius: 8px;
-  padding: 20px;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.success-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--emerald);
-}
-
-.success-card .sc-icon { font-size: 2.2rem; margin-bottom: 8px; display: block; }
-.success-card h4 { font-size: 1.15rem; font-weight: 800; margin-bottom: 8px; }
-.success-card p { font-size: 1rem; color: var(--text-dim); }
-
-/* ========== LESSONS ========== */
-.lesson-accordion { margin: 24px 0; }
-
-.lesson-item {
-  background: rgba(0,0,0,0.3);
+.lesson-simple-card {
+  background: rgba(255, 255, 255, 0.03);
   border: 1px solid #333;
   border-radius: 6px;
-  margin-bottom: 8px;
-  overflow: hidden;
-}
-
-.lesson-header {
-  padding: 14px 20px;
-  cursor: pointer;
+  padding: 14px 16px;
   display: flex;
-  align-items: center;
   gap: 12px;
-  transition: background 0.2s;
-  user-select: none;
+  align-items: flex-start;
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
-.lesson-header:hover { background: rgba(255,255,255,0.03); }
-
-.lesson-header .lesson-num {
-  font-family: var(--pixel);
-  font-size: 8px;
+.lesson-simple-card .ls-icon {
+  font-size: 1.25rem;
+  line-height: 1;
   color: var(--gold);
-  flex-shrink: 0;
-}
-
-.lesson-header .lesson-title { font-weight: 700; flex: 1; font-size: 1.1rem; }
-.lesson-header .lesson-chevron { color: #666; transition: transform 0.3s; }
-
-.lesson-item.open .lesson-chevron { transform: rotate(180deg); color: var(--gold); }
-
-.lesson-body {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.5s ease;
-}
-
-.lesson-body-inner {
-  padding: 0 20px 16px;
-  color: var(--text-dim);
-  font-size: 1.05rem;
-  line-height: 1.8;
 }
 
 /* ========== TIMELINE ========== */
@@ -1255,14 +1207,7 @@ main {
 <section id="hero">
   <div class="hero-inner">
     <div class="hero-badge">⭐ OBEC AWARDS — BEST PRACTICE</div>
-    <div class="hero-blocks">
-      <div class="iso-block"><div class="top"></div><div class="left"></div><div class="right"></div></div>
-      <div class="iso-block"><div class="top"></div><div class="left"></div><div class="right"></div></div>
-      <div class="iso-block"><div class="top"></div><div class="left"></div><div class="right"></div></div>
-      <div class="iso-block"><div class="top"></div><div class="left"></div><div class="right"></div></div>
-      <div class="iso-block"><div class="top"></div><div class="left"></div><div class="right"></div></div>
-      <div class="iso-block"><div class="top"></div><div class="left"></div><div class="right"></div></div>
-    </div>
+
     <h1 class="hero-title">
       <span class="hl-gold">พหุปัญญา</span> & <span class="hl-cyan">แนวคิดเชิงคำนวณ</span><br>
       ผ่านการสร้างสรรค์ด้วย <span class="hl-green">Minecraft</span>
@@ -1664,53 +1609,50 @@ main {
 <section id="success" class="section section-anchor">
   <div class="mc-panel reveal">
     <div class="pixel-heading">⭐ SECTION 07 — <span style="color:var(--emerald)">ปัจจัยความสำเร็จ</span></div>
-    <div class="panel-title">อะไรทำให้นวัตกรรมนี้สำเร็จ?</div>
+    <div class="panel-title">กุญแจสำคัญสู่ความสำเร็จ</div>
 
-    <div class="success-grid">
-      <div class="success-card reveal"><span class="sc-icon">🎮</span><h4>Game = Motivation</h4><p>Minecraft กระตุ้นแรงจูงใจและการเรียนรู้ของนักเรียนอย่างยั่งยืน</p></div>
-      <div class="success-card reveal"><span class="sc-icon">🔴</span><h4>Redstone = Coding Bridge</h4><p>วงจร Redstone เชื่อมโยงระบบตรรกะไฟฟ้าสู่ทักษะการเขียนโปรแกรมจริง</p></div>
-      <div class="success-card reveal"><span class="sc-icon">📐</span><h4>GPAS = Structure</h4><p>กรอบ GPAS 5 Steps จัดระเบียบการเล่นเกมให้อยู่ในระบบการเรียนรู้เชิงลึก</p></div>
-      <div class="success-card reveal"><span class="sc-icon">👫</span><h4>Peer Teaching</h4><p>ระบบบัดดี้ (Buddy) ช่วยพัฒนาทักษะการทำงานร่วมกันและภาวะผู้นำ</p></div>
-      <div class="success-card reveal"><span class="sc-icon">🧠</span><h4>CT ซ่อนอยู่ทุกขั้นตอน</h4><p>ฝึกกระบวนการคิดเชิงคำนวณและแก้ปัญหาผ่านภารกิจอย่างเป็นธรรมชาติ</p></div>
-      <div class="success-card reveal"><span class="sc-icon">🏫</span><h4>ผู้บริหารสนับสนุน</h4><p>ความพร้อมของเครื่องคอมพิวเตอร์ เซิร์ฟเวอร์ LAN และกลุ่ม PLC ในเครือข่าย</p></div>
+    <div class="success-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin:24px 0;">
+      <div class="success-card reveal" style="background:rgba(0,0,0,0.4); border:2px solid #333; border-radius:8px; padding:20px; text-align:center; transition:all 0.3s ease;">
+        <span class="sc-icon" style="font-size:2.2rem; margin-bottom:8px; display:block;">🎮</span>
+        <h4>Game & Motivation</h4>
+        <p style="font-size:0.95rem; color:var(--text-dim);">Minecraft ช่วยกระตุ้นความสนใจและแรงจูงใจในการเรียนรู้ของนักเรียนอย่างยั่งยืน</p>
+      </div>
+      <div class="success-card reveal" style="background:rgba(0,0,0,0.4); border:2px solid #333; border-radius:8px; padding:20px; text-align:center; transition:all 0.3s ease;">
+        <span class="sc-icon" style="font-size:2.2rem; margin-bottom:8px; display:block;">🔴</span>
+        <h4>Redstone Logic</h4>
+        <p style="font-size:0.95rem; color:var(--text-dim);">วงจร Redstone เชื่อมโยงระบบตรรกะไฟฟ้า สู่ทักษะการเขียนโค้ดและกระบวนการคิดเชิงคำนวณ</p>
+      </div>
+      <div class="success-card reveal" style="background:rgba(0,0,0,0.4); border:2px solid #333; border-radius:8px; padding:20px; text-align:center; transition:all 0.3s ease;">
+        <span class="sc-icon" style="font-size:2.2rem; margin-bottom:8px; display:block;">📐</span>
+        <h4>GPAS 5 Steps</h4>
+        <p style="font-size:0.95rem; color:var(--text-dim);">จัดระเบียบการเล่นอิสระ ให้อยู่ในกระบวนการสร้างความรู้และพัฒนาทักษะการคิดเชิงลึก</p>
+      </div>
+      <div class="success-card reveal" style="background:rgba(0,0,0,0.4); border:2px solid #333; border-radius:8px; padding:20px; text-align:center; transition:all 0.3s ease;">
+        <span class="sc-icon" style="font-size:2.2rem; margin-bottom:8px; display:block;">👥</span>
+        <h4>Buddy System</h4>
+        <p style="font-size:0.95rem; color:var(--text-dim);">การจัดคู่บัดดี้ช่วยเสริมทักษะการทำงานเป็นทีม ช่วยเหลือกันเรียนรู้ และกระตุ้นภาวะผู้นำ</p>
+      </div>
     </div>
-  </div>
 
-  <div class="mc-panel gold-border reveal" style="margin-top:24px;">
-    <div class="pixel-heading">📚 <span style="color:var(--gold)">บทเรียนที่ได้รับ (Lessons Learned)</span></div>
-
-    <div class="lesson-accordion">
-      <div class="lesson-item">
-        <div class="lesson-header">
-          <span class="lesson-num">#1</span>
-          <span class="lesson-title">นักเรียนยังไม่คุ้นชินเกม → จัดสอนปฐมนิเทศเบื้องต้นพร้อมระบบบัดดี้ช่วยเหลือ</span>
-          <span class="lesson-chevron">▼</span>
+    <div class="pixel-heading" style="margin-top: 32px;">📚 <span style="color:var(--gold)">บทเรียนที่ได้รับ (Lessons Learned)</span></div>
+    <div class="lessons-simple-grid">
+      <div class="lesson-simple-card reveal">
+        <span class="ls-icon">💡</span>
+        <div>
+          <strong>ทักษะการเล่นเกม:</strong> สอนการควบคุม 1 ชม. แรก ควบคู่กับการจับคู่ช่วยกัน ทำให้ประหยัดเวลาและผู้เรียนเป็นเร็วขึ้น
         </div>
-        <div class="lesson-body"><div class="lesson-body-inner">จัดสอนการควบคุมและระบบพื้นฐาน 1 ชั่วโมง พร้อมจับคู่นักเรียนที่มีทักษะช่วยเหลือเพื่อน ทำให้นักเรียนใช้งานได้รวดเร็ว</div></div>
       </div>
-      <div class="lesson-item">
-        <div class="lesson-header">
-          <span class="lesson-num">#2</span>
-          <span class="lesson-title">ผู้เรียนหลุดจากเป้าหมายการประเมิน → กำหนดเวลาและเกณฑ์ Rubric ที่ชัดเจน</span>
-          <span class="lesson-chevron">▼</span>
+      <div class="lesson-simple-card reveal">
+        <span class="ls-icon">💡</span>
+        <div>
+          <strong>การคงเป้าหมายการประเมิน:</strong> กำหนดเวลาทำงานและประเมิน Rubrics กิจกรรมย่อยทุก 15 นาที เพื่อป้องกันการเล่นนอกเป้าหมาย
         </div>
-        <div class="lesson-body"><div class="lesson-body-inner">แจ้งเตือนเวลาสร้างสรรค์ทุก 15 นาที นำเสนอความก้าวหน้าย่อย และประเมินด้วยเกณฑ์ที่มอบหมายเพื่อคงจุดสนใจของกลุ่ม</div></div>
       </div>
-      <div class="lesson-item">
-        <div class="lesson-header">
-          <span class="lesson-num">#3</span>
-          <span class="lesson-title">ประสิทธิภาพของเครื่องต่ำ → ปรับตั้งค่ากราฟิกและลดระยะการแสดงผล</span>
-          <span class="lesson-chevron">▼</span>
+      <div class="lesson-simple-card reveal">
+        <span class="ls-icon">💡</span>
+        <div>
+          <strong>ข้อจำกัดเครื่องคอมพิวเตอร์:</strong> ปรับตั้งค่าลด Render Distance เป็น 8 chunks และปิด Fancy Graphics เพื่อความเสถียร
         </div>
-        <div class="lesson-body"><div class="lesson-body-inner">ลดระยะ Render Distance เหลือ 8 chunks ปิดเอฟเฟกต์ Fancy Graphics เพื่อป้องกันเครื่องประมวลผลกระตุก</div></div>
-      </div>
-      <div class="lesson-item">
-        <div class="lesson-header">
-          <span class="lesson-num">#4</span>
-          <span class="lesson-title">การเชื่อมต่อเครือข่ายขัดข้อง → สำรองไฟล์ข้อมูลและเตรียมแผนสแตนด์บาย</span>
-          <span class="lesson-chevron">▼</span>
-        </div>
-        <div class="lesson-body"><div class="lesson-body-inner">สำรองไฟล์แผนที่สร้างสรรค์สม่ำเสมอทุกชั่วโมง และเตรียมแผนเล่นเดี่ยวสแตนด์บายเผื่อเกิดเหตุขัดข้องของระบบแลน</div></div>
       </div>
     </div>
   </div>
@@ -2058,25 +2000,7 @@ document.querySelectorAll('.gpas-step-header').forEach(header => {
   });
 });
 
-// ===== LESSON ACCORDION =====
-document.querySelectorAll('.lesson-header').forEach(header => {
-  header.addEventListener('click', () => {
-    const item = header.parentElement;
-    const body = item.querySelector('.lesson-body');
-    const inner = item.querySelector('.lesson-body-inner');
-    const isOpen = item.classList.contains('open');
 
-    document.querySelectorAll('.lesson-item').forEach(i => {
-      i.classList.remove('open');
-      i.querySelector('.lesson-body').style.maxHeight = '0';
-    });
-
-    if (!isOpen) {
-      item.classList.add('open');
-      body.style.maxHeight = inner.scrollHeight + 20 + 'px';
-    }
-  });
-});
 
 // ===== KEYBOARD HOTBAR =====
 document.addEventListener('keydown', (e) => {
