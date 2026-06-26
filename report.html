@@ -1,0 +1,2008 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>รายงานวิจัยและแผนการสอนฉบับ Interactive</title>
+<meta name="description" content="รายงานการพัฒนานวัตกรรมการจัดกิจกรรมวิทยาการคำนวณผ่าน Minecraft ร่วมกับ GPAS 5 Steps">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sky-day: #87CEEB;
+  --sky-sunset: #FF6B35;
+  --sky-night: #0a0e1a;
+  --grass: #5D9B3E;
+  --grass-dark: #4A7A2E;
+  --grass-top: #7EC850;
+  --dirt: #8B6914;
+  --dirt-dark: #6B4F10;
+  --stone: #7F7F7F;
+  --stone-dark: #5A5A5A;
+  --diamond: #4AEDD9;
+  --diamond-glow: rgba(74,237,217,0.3);
+  --gold: #FFD700;
+  --gold-dark: #CC9900;
+  --emerald: #17DD62;
+  --bg: #1a1a2e;
+  --text: #f0f0f0;
+  --text-dim: #a0a0b0;
+  --pixel: 'Press Start 2P', monospace;
+  --body: 'Prompt', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--body);
+  color: var(--text);
+  line-height: 1.6;
+  background: var(--bg);
+  overflow-x: hidden;
+  font-size: 0.95rem;
+}
+
+/* ========== SKY BACKGROUND ========== */
+#sky {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(180deg, #87CEEB 0%, #b8e4f9 40%, #7ec850 95%, #5d9b3e 100%);
+  opacity: 0.85;
+}
+
+#stars {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, #eee, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 50px 160px, #ddd, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+    radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0));
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  opacity: 0.15;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ========== HEADER AND CONTAINER ========== */
+main {
+  position: relative;
+  z-index: 10;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px 100px;
+}
+
+.report-title-wrap {
+  text-align: center;
+  margin-bottom: 30px;
+  animation: fadeDown 1s ease;
+}
+
+@keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+.hero-badge {
+  display: inline-block;
+  font-family: var(--pixel);
+  font-size: 10px;
+  color: var(--gold);
+  background: rgba(0,0,0,0.65);
+  border: 1px solid var(--gold-dark);
+  padding: 8px 20px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+
+.main-title {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+.main-title span.gold { color: var(--gold); }
+.main-title span.cyan { color: var(--diamond); }
+.main-title span.green { color: var(--grass-top); }
+
+.author-sub {
+  font-size: 1rem;
+  color: var(--text-dim);
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+  margin-bottom: 20px;
+}
+
+/* ========== INVENTORY / TAB SYSTEM ========== */
+.gui-container {
+  background: rgba(0, 0, 0, 0.75);
+  border: 3px solid #555;
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.6);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 70vh;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  position: relative;
+}
+
+.gui-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(90deg, var(--gold) 0, var(--gold) 8px, var(--gold-dark) 8px, var(--gold-dark) 16px);
+  z-index: 10;
+}
+
+/* GUI TABS */
+.gui-tabs {
+  display: flex;
+  background: #2a2a2a;
+  border-bottom: 3px solid #555;
+  overflow-x: auto;
+  gap: 2px;
+  padding: 4px 4px 0;
+}
+
+.gui-tab-btn {
+  background: #444;
+  border: 2px solid #555;
+  border-bottom: none;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+  color: #888;
+  padding: 10px 18px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.95rem;
+  font-family: var(--body);
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gui-tab-btn:hover {
+  background: #555;
+  color: #ccc;
+}
+
+.gui-tab-btn.active {
+  background: rgba(0,0,0,0.75);
+  color: var(--diamond);
+  border-color: #555 #555 rgba(0,0,0,0);
+  transform: translateY(2px);
+  padding-bottom: 12px;
+}
+
+/* GUI CONTENT PANELS */
+.gui-panel {
+  display: none;
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+  max-height: 75vh;
+}
+
+.gui-panel.active {
+  display: block;
+}
+
+/* ========== CHAPTER READER LAYOUT ========== */
+.chapter-layout {
+  display: flex;
+  gap: 24px;
+  height: 100%;
+}
+
+.chapter-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  border-right: 2px solid #333;
+  padding-right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chapter-nav-btn {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 10px 12px;
+  color: var(--text-dim);
+  text-align: left;
+  cursor: pointer;
+  font-family: var(--body);
+  font-size: 0.88rem;
+  transition: all 0.2s ease;
+}
+
+.chapter-nav-btn:hover,
+.chapter-nav-btn.active {
+  background: rgba(74,237,217,0.1);
+  border-color: var(--diamond);
+  color: #fff;
+}
+
+.chapter-content-pane {
+  flex: 1;
+  padding-left: 8px;
+  overflow-y: auto;
+}
+
+.chapter-section {
+  display: none;
+}
+
+.chapter-section.active {
+  display: block;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.pixel-heading {
+  font-family: var(--pixel);
+  font-size: 9px;
+  color: var(--gold);
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.chapter-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  border-bottom: 2px dashed #444;
+  padding-bottom: 10px;
+  color: #fff;
+}
+
+.chapter-body p {
+  margin-bottom: 16px;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+}
+
+.chapter-body blockquote {
+  background: rgba(255,215,0,0.04);
+  border-left: 4px solid var(--gold);
+  padding: 12px 16px;
+  margin: 16px 0;
+  border-radius: 4px;
+}
+
+.chapter-body blockquote p {
+  margin-bottom: 0;
+  color: var(--text);
+  font-style: italic;
+}
+
+/* ========== INTERACTIVE LESSONS ========== */
+.lesson-timeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.lesson-time-btn {
+  background: #333;
+  border: 2px solid #555;
+  border-radius: 6px;
+  padding: 12px;
+  color: var(--text-dim);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  box-shadow: inset -2px -2px 0 #222, inset 2px 2px 0 #444;
+}
+
+.lesson-time-btn:hover {
+  background: #444;
+  border-color: #777;
+}
+
+.lesson-time-btn.active {
+  background: #5c8e32;
+  border-color: #000;
+  color: #fff;
+  box-shadow: inset -3px -3px 0 #2e5a15, inset 3px 3px 0 #83be53;
+}
+
+.lesson-time-btn h5 {
+  font-family: var(--pixel);
+  font-size: 6px;
+  margin-bottom: 4px;
+  color: var(--gold);
+}
+
+.lesson-time-btn.active h5 {
+  color: #fff;
+}
+
+.lesson-time-btn p {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.lesson-detail-card {
+  background: rgba(255,255,255,0.02);
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 24px;
+  animation: fadeIn 0.4s ease;
+}
+
+.lesson-grid-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.meta-box {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 12px;
+}
+
+.meta-box h4 {
+  font-size: 0.9rem;
+  color: var(--diamond);
+  margin-bottom: 6px;
+}
+
+.meta-box p, .meta-box ul {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  list-style: none;
+}
+
+.lesson-table-wrap {
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+.mc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.mc-table th, .mc-table td {
+  border: 1px solid #333;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.mc-table th {
+  background: #252525;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.mc-table td {
+  background: rgba(0,0,0,0.2);
+  color: var(--text-dim);
+  vertical-align: top;
+}
+
+.mc-table tr:nth-child(even) td {
+  background: rgba(255,255,255,0.01);
+}
+
+/* ========== INTERACTIVE SCOREBOARD ========== */
+.scoreboard-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.scoreboard-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.summary-chart-card {
+  background: rgba(0,0,0,0.3);
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+}
+
+.summary-chart-card h4 {
+  font-size: 1rem;
+  margin-bottom: 20px;
+  color: var(--diamond);
+}
+
+/* CSS CHARTS */
+.chart-bar-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 150px;
+  border-bottom: 2px solid #444;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+}
+
+.chart-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 70px;
+}
+
+.chart-bar {
+  width: 36px;
+  background: #555;
+  border: 2px solid #000;
+  border-bottom: none;
+  transition: height 1s ease-out;
+  position: relative;
+  box-shadow: inset -2px 0 0 rgba(0,0,0,0.3);
+}
+
+.chart-bar.pre {
+  background: #d9534f;
+  box-shadow: inset -3px 0 0 #b52b27, inset 3px 3px 0 #e6807c;
+}
+
+.chart-bar.post {
+  background: #5cb85c;
+  box-shadow: inset -3px 0 0 #3e8f3e, inset 3px 3px 0 #8ad08a;
+}
+
+.chart-bar .bar-val {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--pixel);
+  font-size: 6px;
+  color: #fff;
+}
+
+.chart-label {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+.student-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.student-card {
+  background: rgba(255,255,255,0.03);
+  border: 2px solid #333;
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.student-card:hover, .student-card.active {
+  border-color: var(--diamond);
+  background: rgba(74,237,217,0.05);
+  transform: translateY(-2px);
+}
+
+.student-card h5 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.student-card p.grp {
+  font-size: 0.75rem;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.student-card .mini-growth {
+  display: inline-block;
+  background: rgba(23,221,98,0.15);
+  color: var(--emerald);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.student-detail-pane {
+  background: rgba(255,255,255,0.02);
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+
+.student-detail-pane.active {
+  display: block;
+}
+
+.st-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.progress-track {
+  width: 100%;
+  height: 14px;
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 7px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 1s ease-out;
+}
+
+.progress-fill.pre {
+  background: linear-gradient(90deg, #d9534f, #f0ad4e);
+}
+
+.progress-fill.post {
+  background: linear-gradient(90deg, #5cb85c, var(--emerald));
+}
+
+/* ========== INTERACTIVE QUIZ ========== */
+.quiz-layout {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.quiz-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 10px;
+}
+
+.quiz-progress-text {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+}
+
+.quiz-score-badge {
+  font-family: var(--pixel);
+  font-size: 8px;
+  color: var(--gold);
+}
+
+.quiz-card {
+  background: rgba(255,255,255,0.02);
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.quiz-category {
+  font-family: var(--pixel);
+  font-size: 6px;
+  color: var(--diamond);
+  margin-bottom: 8px;
+}
+
+.quiz-question {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #fff;
+  line-height: 1.5;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quiz-opt-btn {
+  background: rgba(0,0,0,0.3);
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 14px 20px;
+  color: var(--text-dim);
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.quiz-opt-btn:hover {
+  background: rgba(255,255,255,0.02);
+  border-color: #666;
+  color: #fff;
+}
+
+.quiz-opt-btn.correct {
+  background: rgba(23,221,98,0.1);
+  border-color: var(--emerald);
+  color: #fff;
+}
+
+.quiz-opt-btn.incorrect {
+  background: rgba(217,83,79,0.1);
+  border-color: #d9534f;
+  color: #fff;
+}
+
+.quiz-explanation {
+  background: rgba(74,237,217,0.05);
+  border: 1px dashed var(--diamond);
+  border-radius: 6px;
+  padding: 16px;
+  margin-top: 20px;
+  display: none;
+  font-size: 0.9rem;
+  animation: fadeIn 0.4s ease;
+}
+
+.quiz-explanation strong {
+  color: var(--diamond);
+}
+
+.quiz-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.mc-btn {
+  display: inline-block;
+  padding: 10px 24px;
+  background: #5c8e32;
+  border: 3px solid #000;
+  color: #fff !important;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.1s ease;
+  box-shadow: inset -3px -3px 0 #2e5a15, inset 3px 3px 0 #83be53;
+  text-align: center;
+}
+
+.mc-btn:hover {
+  background: #6fa63c;
+  box-shadow: inset -3px -3px 0 #3c6f1d, inset 3px 3px 0 #97d762;
+  transform: translateY(-2px);
+}
+
+.mc-btn:active {
+  background: #3f6822;
+  box-shadow: inset 3px 3px 0 #1c380c, inset -3px -3px 0 #52822d;
+  transform: translateY(1px);
+}
+
+.mc-btn.grey {
+  background: #777;
+  box-shadow: inset -3px -3px 0 #444, inset 3px 3px 0 #aaa;
+}
+
+.mc-btn.grey:hover {
+  background: #888;
+  box-shadow: inset -3px -3px 0 #555, inset 3px 3px 0 #bbb;
+}
+
+.mc-btn.grey:active {
+  background: #555;
+  box-shadow: inset 3px 3px 0 #333, inset -3px -3px 0 #777;
+}
+
+/* ========== INTERACTIVE WORKSHEETS ========== */
+.sheet-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.sheet-card {
+  background: rgba(255,255,255,0.03);
+  border: 2px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sheet-card:hover {
+  border-color: var(--gold);
+  background: rgba(255,215,0,0.03);
+  transform: translateY(-2px);
+}
+
+.sheet-card h4 {
+  font-size: 1.1rem;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.sheet-card p {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.sheet-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.sheet-modal-content {
+  background: #1e1e1e;
+  border: 3px solid #555;
+  border-radius: 8px;
+  max-width: 650px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 30px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+  position: relative;
+  animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalSlideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+.close-modal {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  font-size: 1.8rem;
+  color: #888;
+  cursor: pointer;
+}
+
+.close-modal:hover {
+  color: #fff;
+}
+
+.sheet-mock-paper {
+  background: #fdfaf2;
+  color: #111;
+  padding: 24px;
+  border-radius: 4px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  margin-top: 16px;
+  font-family: var(--body);
+}
+
+.sheet-mock-paper h5 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-bottom: 2px solid #8B6914;
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  color: #8B6914;
+}
+
+.paper-field {
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+}
+
+.paper-field label {
+  font-weight: 700;
+  color: #555;
+  display: block;
+}
+
+.paper-field .value {
+  background: rgba(139,105,20,0.06);
+  border-bottom: 1px dashed #8B6914;
+  padding: 6px 10px;
+  border-radius: 4px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* ========== BACK HOTBAR SLOT ========== */
+.back-hotbar-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0,0,0,0.6);
+  border: 2px solid #555;
+  border-radius: 6px;
+  padding: 10px 20px;
+  margin-bottom: 24px;
+  text-decoration: none;
+  color: var(--gold);
+  font-family: var(--pixel);
+  font-size: 8px;
+  transition: all 0.2s;
+  box-shadow: inset -2px -2px 0 #222, inset 2px 2px 0 #444;
+}
+
+.back-hotbar-slot:hover {
+  border-color: #fff;
+  color: #fff;
+  background: rgba(100,100,100,0.4);
+  transform: translateX(-4px);
+}
+
+.back-hotbar-slot .icon {
+  font-size: 1.15rem;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+  .chapter-layout {
+    flex-direction: column;
+  }
+  .chapter-sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 2px solid #333;
+    padding-right: 0;
+    padding-bottom: 16px;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  .chapter-nav-btn {
+    white-space: nowrap;
+  }
+  .gui-panel {
+    padding: 16px;
+  }
+  .chart-bar-container {
+    height: 120px;
+  }
+  .chart-bar-wrapper {
+    width: 50px;
+  }
+  .chart-bar {
+    width: 28px;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="sky"></div>
+<div id="stars"></div>
+
+<main>
+  <!-- BACK BUTTON -->
+  <a href="index.html" class="back-hotbar-slot">
+    <span class="icon">◀</span> กลับหน้าหลัก PORTFOLIO
+  </a>
+
+  <!-- TITLE HEADER -->
+  <div class="report-title-wrap">
+    <div class="hero-badge">⭐ BEST PRACTICE INTERACTIVE REPORT</div>
+    <h1 class="main-title">รายงานการพัฒนานวัตกรรมการจัดเรียนรู้</h1>
+    <div class="author-sub">
+      โดย ครูภาณธร ภรธนบูรณ์ | โรงเรียนวัดบ้านรุน
+    </div>
+  </div>
+
+  <!-- MAIN GUI TAB CONTROLLER -->
+  <div class="gui-container">
+    <!-- TABS -->
+    <div class="gui-tabs">
+      <button class="gui-tab-btn active" onclick="switchGuiTab('report')">📖 สรุปรายงานวิจัย</button>
+      <button class="gui-tab-btn" onclick="switchGuiTab('lessons')">🧭 แผนการสอน (Active)</button>
+      <button class="gui-tab-btn" onclick="switchGuiTab('scoreboard')">📈 ผลการประเมินวิจัย</button>
+      <button class="gui-tab-btn" onclick="switchGuiTab('quiz')">✍️ ข้อสอบวัดทักษะ CT</button>
+      <button class="gui-tab-btn" onclick="switchGuiTab('sheets')">📁 ใบงาน & เอกสาร</button>
+    </div>
+
+    <!-- TAB 1: REPORT READER PANEL -->
+    <div id="panel-report" class="gui-panel active">
+      <div class="chapter-layout">
+        <!-- Sidebar Navigation -->
+        <div class="chapter-sidebar">
+          <button class="chapter-nav-btn active" onclick="switchChapter(1)">บทที่ 1: สภาพปัญหา</button>
+          <button class="chapter-nav-btn" onclick="switchChapter(2)">บทที่ 2: วัตถุประสงค์</button>
+          <button class="chapter-nav-btn" onclick="switchChapter(3)">บทที่ 3: กรอบคิดทฤษฎี</button>
+          <button class="chapter-nav-btn" onclick="switchChapter(4)">บทที่ 4: ขั้นตอนดำเนินงาน</button>
+          <button class="chapter-nav-btn" onclick="switchChapter(5)">บทที่ 5: แผนผัง GPAS</button>
+        </div>
+
+        <!-- Content Display Pane -->
+        <div class="chapter-content-pane">
+          <!-- CHAPTER 1 -->
+          <div id="chapter-1" class="chapter-section active">
+            <div class="pixel-heading">CHAPTER 1 — BACKGROUND</div>
+            <h2 class="chapter-title">ความเป็นมาและความสำคัญของปัญหา</h2>
+            <div class="chapter-body">
+              <p>จากการจัดการเรียนรู้กลุ่มสาระการเรียนรู้วิทยาศาสตร์และเทคโนโลยี ในวิชา **วิทยาการคำนวณ (Computational Thinking) ของนักเรียนชั้นประถมศึกษาปีที่ 6 โรงเรียนวัดบ้านรุน** พบข้อจำกัดเชิงประจักษ์ดังต่อไปนี้:</p>
+              <blockquote>
+                <p>"นักเรียนร้อยละ 68 ขาดกระบวนการคิดเชิงวิเคราะห์ตรรกะที่เป็นระบบ ไม่สามารถแยกย่อยปัญหาออกเป็นส่วนย่อยได้ และอีกกว่าร้อยละ 72 ขาดแรงจูงใจในการเรียนรู้หัวข้อวิทยาการคำนวณแบบเดิมที่เน้นการท่องจำคำนิยาม"</p>
+              </blockquote>
+              <p>จากสภาพปัญหาดังกล่าว ผู้จัดทำจึงได้ค้นหานวัตกรรมที่เหมาะสมเพื่อเปลี่ยนการเรียนรู้ให้เป็นแบบ **Active Learning** โดยดึงศักยภาพความสนใจของตัวผู้เรียนมาใช้ผ่านการเรียนรู้แบบใช้เกมเป็นฐาน (Game-Based Learning) ด้วยเกม **Minecraft Java Edition** ร่วมกับกรอบกระบวนการพัฒนาระดับคิดวิเคราะห์เชิงลึก **GPAS 5 Steps**</p>
+              <p>โดยการปรับแต่งเนื้อหากิจกรรมในสเกลบ้านให้อยู่ในกรอบ **"การออกแบบสร้างสรรค์บ้านอย่างง่ายเชิงภูมิปัญญา"** เพื่อไม่ให้เนื้อหาวารสารระบบไฟวิศวกรรมยากเกินความสามารถของนักเรียนระดับประถมหก และสามารถประเมินได้ครบถ้วนเป็นรูปธรรม</p>
+            </div>
+          </div>
+
+          <!-- CHAPTER 2 -->
+          <div id="chapter-2" class="chapter-section">
+            <div class="pixel-heading">CHAPTER 2 — OBJECTIVES</div>
+            <h2 class="chapter-title">วัตถุประสงค์และเป้าหมาย</h2>
+            <div class="chapter-body">
+              <p><strong>วัตถุประสงค์ในการดำเนินงานวิจัย:</strong></p>
+              <p>1. เพื่อพัฒนาทักษะแนวคิดเชิงคำนวณ (Computational Thinking: CT) 4 ด้านของนักเรียนชั้นประถมศึกษาปีที่ 6 ผ่านกิจกรรมสร้างสรรค์บ้านอย่างง่ายด้วย Minecraft</p>
+              <p>2. เพื่อสังเกตการณ์ระดับพฤติกรรมพหุปัญญาด้านตรรกะและคณิตศาสตร์ (Multiple Intelligences) ของนักเรียนระหว่างทำกิจกรรม</p>
+              <p>3. เพื่อประเมินเจตคติระดับความพึงพอใจของผู้เรียนที่มีต่อการจัดการเรียนรู้วิทยาการคำนวณผ่านเกมสร้างสรรค์</p>
+              <p><strong>เป้าหมายเชิงปริมาณและคุณภาพ:</strong></p>
+              <p>• <strong>เชิงปริมาณ:</strong> นักเรียนชั้น ป.6 จำนวนเป้าหมาย 6 คน ได้รับการจัดกิจกรรมและมีร้อยละพัฒนาการด้านทักษะ CT หลังเรียนเพิ่มขึ้นเฉลี่ยไม่น้อยกว่า 70%</p>
+              <p>• <strong>เชิงคุณภาพ:</strong> นักเรียนมีชิ้นงานจำลองบ้านอย่างน้อยกลุ่มละ 1 ผลงานที่มีองค์ประกอบการก่อสร้างจริงตรงตามพิมพ์เขียวอย่างถูกต้อง และผ่านการสะท้อนคิดประเมินตนเองตามขั้นตอน GPAS 5 Steps</p>
+            </div>
+          </div>
+
+          <!-- CHAPTER 3 -->
+          <div id="chapter-3" class="chapter-section">
+            <div class="pixel-heading">CHAPTER 3 — FRAMEWORK & THEORY</div>
+            <h2 class="chapter-title">กรอบแนวคิด ทฤษฎี และหลักการ</h2>
+            <div class="chapter-body">
+              <p>นวัตกรรมนี้บูรณาการทฤษฎีหลัก 3 ด้านเข้าด้วยกันเพื่อส่งเสริมการเรียนรู้ที่มีความหมาย:</p>
+              <p><strong>1. ทฤษฎีพหุปัญญา (Theory of Multiple Intelligences):</strong> มุ่งเน้นการพัฒนาทักษะตรรกะ-คณิตศาสตร์ การนับอัตราส่วน สัดส่วนพื้นที่แปลนพิมพ์เขียว และมิติสัมพันธ์เชิงพื้นที่ของตัวบ้านผ่านรูปทรง 3 มิติใน Minecraft</p>
+              <p><strong>2. ทักษะแนวคิดเชิงคำนวณ (Computational Thinking - CT 4 Pillars):</strong></p>
+              <p>• <em>Decomposition:</em> การแยกส่วนประกอบโครงสร้างบ้านออกเป็น รากฐาน ผนัง หน้าต่าง หลังคา และระบบไฟ</p>
+              <p>• <em>Pattern Recognition:</em> สังเกตความสมมาตรของผนังบ้านตรงข้าม สลับลายพื้นทางเดิน</p>
+              <p>• <em>Abstraction:</em> ละทิ้งของตกแต่งภายในเพื่อมุ่งเน้นการคราฟต์แปลนพิกัดโครงสร้างภายนอกที่จำเป็น</p>
+              <p>• <em>Algorithm Design:</em> ลำดับขั้นตอนการก่อสร้างเสมือนจริงในเกม (ขุดดิน → วางฐานราก → ตั้งเสา → ก่อผนัง → มุงหลังคา)</p>
+              <p><strong>3. กระบวนการ GPAS 5 Steps:</strong> เป็นหัวใจในการคุมขั้นตอนการสอนเพื่อจัดระเบียบการเล่นเกมให้อยู่ในระบบการเรียนรู้สร้างความรู้อย่างเป็นขั้นตอน</p>
+            </div>
+          </div>
+
+          <!-- CHAPTER 4 -->
+          <div id="chapter-4" class="chapter-section">
+            <div class="pixel-heading">CHAPTER 4 — OPERATION & PDCA</div>
+            <h2 class="chapter-title">ขั้นตอนการดำเนินงานตามวงจร PDCA</h2>
+            <div class="chapter-body">
+              <p>การวิจัยและพัฒนาจัดทำระบบตามวงจรคุณภาพ PDCA ดังตารางกิจกรรม:</p>
+              <p>• <strong>P (Plan):</strong> วิเคราะห์ตัวชี้วัด ว 4.2 ออกแบบแผนการจัดการเรียนรู้ 5 ชั่วโมง จัดเตรียมเครื่องมือและเซิร์ฟเวอร์ LAN ให้พร้อมทำงาน</p>
+              <p>• <strong>D (Do):</strong> มอบหมายงานเก็บข้อมูลภูมิปัญญาปราชญ์ชาวบ้านนอกเวลาเรียน และจัดกระบวนการสอน Active Learning 5 ชั่วโมงในห้องปฏิบัติการคอมพิวเตอร์</p>
+              <p>• <strong>C (Check):</strong> ประเมินผลงานบ้านด้วยรูบรูคส์ ทดสอบทักษะ CT ด้วยแบบทดสอบ 20 ข้อ และสังเกตพฤติกรรมระหว่างเรียน</p>
+              <p>• <strong>A (Act):</strong> สะท้อนผลประมวลข้อจำกัดทางเทคนิค (เช่น การจำกัด Render Distance เหลือ 8 Chunks เพื่อความไหลลื่น) เพื่อปรับปรุงระบบสอนในคาบ PLC ถัดไป</p>
+            </div>
+          </div>
+
+          <!-- CHAPTER 5 -->
+          <div id="chapter-5" class="chapter-section">
+            <div class="pixel-heading">CHAPTER 5 — GPAS FLOW</div>
+            <h2 class="chapter-title">การออกแบบกิจกรรมตาม GPAS 5 Steps</h2>
+            <div class="chapter-body">
+              <p><strong>Step 1: Gathering (สังเกต รวบรวมข้อมูล):</strong> นักเรียนลงพื้นที่สอบถามช่างไม้/ปราชญ์ท้องถิ่นเรื่องวิธีสร้างบ้าน ค้นคว้าบล็อกวัสดุใน Minecraft</p>
+              <p><strong>Step 2: Processing (วิเคราะห์และสรุปความรู้):</strong> วิเคราะห์เปรียบเทียบลำดับขั้นตอนการก่อสร้าง วาดแปลนพิมพ์เขียว 2 มิติลงกระดาษกราฟ และเขียนอัลกอริทึมลำดับการวางบล็อก</p>
+              <p><strong>Step 3: Applying 1 (ปฏิบัติเพื่อสร้างความรู้):</strong> เชื่อมต่อ LAN Server เล่นด้วยกันเป็นกลุ่ม ลงมือขุดปรับพื้นที่ วางฐาน เสา กำแพง และทำระบบไฟ Daylight Sensor ควบคุมหลอดไฟอัตโนมัติ พร้อมตรวจหาจุดผิดพลาด (Debugging)</p>
+              <p><strong>Step 4: Applying 2 (สื่อสารและนำเสนอ):</strong> ทำกิจกรรม Home Tour ให้คู่หูพาทัวร์นำเสนอขั้นตอนก่อสร้างและรับการประเมินจากเพื่อนๆ</p>
+              <p><strong>Step 5: Self-Regulating (ประเมินตนเองเพื่อสังคม):</strong> เขียน Reflection Journal และทำแบบทดสอบ พร้อมทั้งนำแปลนอัลกอริทึมที่สำเร็จเผยแพร่บนเว็บโรงเรียนเพื่อส่งต่อความรู้</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: LESSON PLANS PANEL -->
+    <div id="panel-lessons" class="gui-panel">
+      <div class="pixel-heading">🧭 ACTIVE LESSON PLANS TIMELINE</div>
+      <h3 style="font-size:1.5rem; margin-bottom:16px;">กำหนดชั่วโมงการจัดกิจกรรมการเรียนรู้ (5 ชั่วโมง + ภาระงาน)</h3>
+      
+      <!-- Timeline Buttons -->
+      <div class="lesson-timeline">
+        <button class="lesson-time-btn active" onclick="switchLessonHour(0)">
+          <h5>PRE-CLASS</h5>
+          <p>ภาระงาน Gathering</p>
+        </button>
+        <button class="lesson-time-btn" onclick="switchLessonHour(1)">
+          <h5>HOUR 1</h5>
+          <p>เทียบขั้นตอนวิจัย</p>
+        </button>
+        <button class="lesson-time-btn" onclick="switchLessonHour(2)">
+          <h5>HOUR 2</h5>
+          <p>Blueprint Designer</p>
+        </button>
+        <button class="lesson-time-btn" onclick="switchLessonHour(3)">
+          <h5>HOUR 3</h5>
+          <p>ลงมือสร้าง: ช่วงที่ 1</p>
+        </button>
+        <button class="lesson-time-btn" onclick="switchLessonHour(4)">
+          <h5>HOUR 4</h5>
+          <p>ลงมือสร้าง: ช่วงที่ 2</p>
+        </button>
+        <button class="lesson-time-btn" onclick="switchLessonHour(5)">
+          <h5>HOUR 5</h5>
+          <p>Home Tour & Assessment</p>
+        </button>
+      </div>
+
+      <!-- Lesson Detail Panels -->
+      <!-- PRE-CLASS -->
+      <div id="lesson-h0" class="lesson-detail-card">
+        <div class="pixel-heading">📋 PRE-CLASS TASK — OUTSIDE SCHOOL</div>
+        <h4 style="font-size:1.25rem; margin-bottom:16px; color:#fff;">สัมภาษณ์ปราชญ์ชาวบ้านและเก็บข้อมูลเบื้องต้น</h4>
+        <div class="lesson-grid-meta">
+          <div class="meta-box">
+            <h4>🎯 ทักษะแนวคิดคำนวณ</h4>
+            <p>• <strong>Decomposition:</strong> แยกขั้นตอนการก่อสร้างบ้านจริงออกมาเป็นขั้นตอนย่อยๆ (เช่น ก่อฐาน ตั้งเสา มุงหลังคา)</p>
+          </div>
+          <div class="meta-box">
+            <h4>📦 สื่อการสอน & อุปกรณ์</h4>
+            <p>• ใบงาน 1.0 "สืบค้นภูมิปัญญาท้องถิ่น", สมุดจด, กล้องถ่ายรูป</p>
+          </div>
+          <div class="meta-box">
+            <h4>✅ วิธีการประเมินผล</h4>
+            <p>• ตรวจความครบถ้วนของใบงาน 1.0 (ต้องบันทึกขั้นตอนอย่างน้อย 6 ลำดับ พร้อมชื่อปราชญ์ที่สัมภาษณ์)</p>
+          </div>
+        </div>
+        <h5 style="margin-bottom:8px; color:var(--gold);">📝 สรุปกระบวนการเรียนรู้:</h5>
+        <p style="color:var(--text-dim); font-size:0.9rem;">
+          นักเรียนลงพื้นที่ในชุมชนนอกเวลาเรียนเป็นรายคู่ สอบถามปราชญ์ชาวบ้าน ช่างไม้ หรือผู้มีประสบการณ์การก่อสร้าง เพื่อศึกษาขั้นตอนและเทคนิคการก่อสร้างบ้านจริงว่าควรทำอะไรก่อน-หลัง แล้วบันทึกลงในใบงาน
+        </p>
+      </div>
+
+      <!-- HOUR 1 -->
+      <div id="lesson-h1" class="lesson-detail-card" style="display:none;">
+        <div class="pixel-heading">⏱️ HOUR 1 — INTRODUCTION & SURVEY</div>
+        <h4 style="font-size:1.25rem; margin-bottom:16px; color:#fff;">ชั่วโมงที่ 1: เทียบขั้นตอนจริง vs เกม Minecraft</h4>
+        <div class="lesson-grid-meta">
+          <div class="meta-box">
+            <h4>🎯 ทักษะแนวคิดคำนวณ</h4>
+            <p>• <strong>Decomposition:</strong> วิเคราะห์แยกโครงสร้างบ้านตัวอย่าง in เกม</p>
+            <p>• <strong>Pattern Recognition:</strong> เปรียบเทียบความสัมพันธ์ของขั้นตอนบ้านจริงและในเกม</p>
+          </div>
+          <div class="meta-box">
+            <h4>📦 สื่อการสอน & อุปกรณ์</h4>
+            <p>• คอมพิวเตอร์, เกม Minecraft LAN, ใบงาน 1.1 "สำรวจบ้าน"</p>
+          </div>
+          <div class="meta-box">
+            <h4>✅ วิธีการประเมินผล</h4>
+            <p>• ตรวจใบงาน 1.1 และการอภิปรายเปรียบเทียบลำดับขั้นตอนในชั้นเรียน</p>
+          </div>
+        </div>
+        <h5 style="margin-bottom:8px; color:var(--gold);">🏫 ขั้นตอนการดำเนินกิจกรรม:</h5>
+        <div class="lesson-table-wrap">
+          <table class="mc-table">
+            <thead>
+              <tr>
+                <th style="width:120px;">ขั้นตอน</th>
+                <th style="width:80px;">เวลา</th>
+                <th>กิจกรรมของครูและนักเรียน</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>ขั้นกระตุ้น</strong></td>
+                <td>10 นาที</td>
+                <td>ครูเปิดบ้านตัวอย่างในเซิร์ฟเวอร์ Minecraft และสอบถามปุ่มควบคุมการเดิน การทำลาย และการวางบล็อกเบื้องต้นให้นักเรียนคุ้นชิน</td>
+              </tr>
+              <tr>
+                <td><strong>ขั้นรวบรวม (Gathering)</strong></td>
+                <td>20 นาที</td>
+                <td>ให้นักเรียนแต่ละคู่นำเสนอข้อมูลที่ได้จากปราชญ์ชาวบ้านหน้าชั้น และครูจดสรุปลำดับขั้นตอนลงบนกระดาน</td>
+              </tr>
+              <tr>
+                <td><strong>ขั้นอภิปราย (Processing)</strong></td>
+                <td>20 นาที</td>
+                <td>นักเรียนสำรวจบ้านตัวอย่างในเกม ค้นหาส่วนประกอบย่อยและจับคู่เปรียบเทียบกับบ้านจริง บันทึกคำตอบในใบงาน 1.1</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- HOUR 2 -->
+      <div id="lesson-h2" class="lesson-detail-card" style="display:none;">
+        <div class="pixel-heading">⏱️ HOUR 2 — BLUEPRINT DESIGNER</div>
+        <h4 style="font-size:1.25rem; margin-bottom:16px; color:#fff;">ชั่วโมงที่ 2: วาดแปลนอิสระและเขียนลำดับอัลกอริทึม</h4>
+        <div class="lesson-grid-meta">
+          <div class="meta-box">
+            <h4>🎯 ทักษะแนวคิดคำนวณ</h4>
+            <p>• <strong>Abstraction:</strong> ละทิ้งรายละเอียดภายใน มุ่งเน้นการวางพิกัดและขนาดกว้างxยาวโครงร่างภายนอก</p>
+            <p>• <strong>Algorithm Design:</strong> เขียนอธิบายขั้นตอนลำดับที่ใช้สร้างจาก 1 ถึง 8</p>
+          </div>
+          <div class="meta-box">
+            <h4>📦 สื่อการสอน & อุปกรณ์</h4>
+            <p>• กระดาษกราฟพิมพ์เขียว, ปากกาสี, ใบงาน 1.2 "Blueprint Designer"</p>
+          </div>
+          <div class="meta-box">
+            <h4>✅ วิธีการประเมินผล</h4>
+            <p>• ประเมินความถูกต้องของการเขียนแบบแปลน 2 มิติและการเขียนชุดคำสั่งอัลกอริทึมที่เป็นขั้นตอน</p>
+          </div>
+        </div>
+        <h5 style="margin-bottom:8px; color:var(--gold);">🏫 ขั้นตอนการดำเนินกิจกรรม:</h5>
+        <div class="lesson-table-wrap">
+          <table class="mc-table">
+            <thead>
+              <tr>
+                <th>ขั้นตอน</th>
+                <th>เวลา</th>
+                <th>กิจกรรมของครูและนักเรียน</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>ขั้นนำ</strong></td>
+                <td>5 นาที</td>
+                <td>ครูชี้แจงโจทย์: ให้สร้าง "บ้านขนาด 8x10 บล็อก ก่อสร้างด้วยโครงสร้างแข็งแรง และต้องมีไฟฟ้าส่องสว่าง"</td>
+              </tr>
+              <tr>
+                <td><strong>ขั้นเขียนพิมพ์เขียว (Abstraction)</strong></td>
+                <td>20 นาที</td>
+                <td>นักเรียนออกแบบบ้าน 2 มิติลงในกระดาษกราฟ ระบุมุมเสา ขอบเขต และพิกัดประตูหน้าต่างอย่างชัดเจน</td>
+              </tr>
+              <tr>
+                <td><strong>ขั้นวางแผนสร้าง (Algorithm)</strong></td>
+                <td>25 นาที</td>
+                <td>นักเรียนเขียนอัลกอริทึม (ลำดับขั้นตอนทำงาน) ลงในใบงาน 1.2 วางแผนแบ่งงานระหว่างคู่ว่าจะรับผิดชอบส่วนใดบ้าง</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- HOUR 3 -->
+      <div id="lesson-h3" class="lesson-detail-card" style="display:none;">
+        <div class="pixel-heading">⏱️ HOUR 3 — BUILDING PHASE 1</div>
+        <h4 style="font-size:1.25rem; margin-bottom:16px; color:#fff;">ชั่วโมงที่ 3: ลงมือสร้างบ้าน ช่วงที่ 1 (งานรากฐานและตั้งเสา)</h4>
+        <div class="lesson-grid-meta">
+          <div class="meta-box">
+            <h4>🎯 ทักษะแนวคิดคำนวณ</h4>
+            <p>• <strong>Pattern Recognition:</strong> วางลายบล็อกฐานรากและการนับระยะเสาให้สมมาตร</p>
+            <p>• <strong>Algorithm Design:</strong> ดำเนินงานวางบล็อกตามข้อความอัลกอริทึมชั่วโมงที่ 2</p>
+          </div>
+          <div class="meta-box">
+            <h4>📦 สื่อการสอน & อุปกรณ์</h4>
+            <p>• เซิร์ฟเวอร์ LAN Minecraft, แผนที่ว่างราบ, ใบงาน 1.3 "Build & Debug Record"</p>
+          </div>
+          <div class="meta-box">
+            <h4>✅ วิธีการประเมินผล</h4>
+            <p>• สังเกตการจัดลำดับทำฐานและเสาบ้านในเกม ตรวจเช็กความคืบหน้าตรงตามใบงาน</p>
+          </div>
+        </div>
+        <h5 style="margin-bottom:8px; color:var(--gold);">🏫 ขั้นตอนการดำเนินกิจกรรม:</h5>
+        <div class="lesson-table-wrap">
+          <table class="mc-table">
+            <thead>
+              <tr>
+                <th>ขั้นตอน</th>
+                <th>เวลา</th>
+                <th>กิจกรรมของครูและนักเรียน</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>ขั้นรันเครื่อง</strong></td>
+                <td>5 นาที</td>
+                <td>ครูเปิดโฮสต์เซิร์ฟเวอร์ LAN ให้นักเรียนทุกกลุ่มจับคู่และล็อกอินเข้าสู่จุดพื้นที่กำหนดตามที่ได้วาดโครงสร้างพิมพ์เขียวไว้</td>
+              </tr>
+              <tr>
+                <td><strong>ขั้นก่อสร้าง (Applying 1)</strong></td>
+                <td>35 นาที</td>
+                <td>นักเรียนลงมือเคลียร์หญ้า วางบล็อกหินรากฐาน ขุดร่องเสา และวางบล็อกไม้เสาเอกเสาโทของบ้านตามลำดับ</td>
+              </tr>
+              <tr>
+                <td><strong>ขั้นบันทึก Bug</strong></td>
+                <td>10 นาที</td>
+                <td>ตรวจสอบระดับความถูกต้องของเสาและสเกลกว้างยาว บันทึกปัญหาเชิงโครงสร้างลงในใบงาน 1.3</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- HOUR 4 -->
+      <div id="lesson-h4" class="lesson-detail-card" style="display:none;">
+        <div class="pixel-heading">⏱️ HOUR 4 — BUILDING PHASE 2</div>
+        <h4 style="font-size:1.25rem; margin-bottom:16px; color:#fff;">ชั่วโมงที่ 4: ลงมือสร้างบ้าน ช่วงที่ 2 (ผนัง หลังคา และระบบไฟอัจฉริยะ)</h4>
+        <div class="lesson-grid-meta">
+          <div class="meta-box">
+            <h4>🎯 ทักษะแนวคิดคำนวณ</h4>
+            <p>• <strong>Decomposition & Algorithm:</strong> ติดตั้งและเดินสาย Redstone วงจรต่อกับ Daylight Sensor เพื่อเปิดปิดไฟอัจฉริยะ</p>
+            <p>• <strong>Debugging:</strong> การแก้ไขบั๊กสลักขัดข้องของวงจรไฟฟ้า หรือจุดบล็อกรั่ว</p>
+          </div>
+          <div class="meta-box">
+            <h4>📦 สื่อการสอน & อุปกรณ์</h4>
+            <p>• คอมพิวเตอร์, วัสดุบล็อก Redstone และ Daylight Sensor ในเกม</p>
+          </div>
+          <div class="meta-box">
+            <h4>✅ วิธีการประเมินผล</h4>
+            <p>• ตรวจผลงานบ้านเบื้องต้น: มีผนัง, ประตู, หน้าต่าง, หลังคา, และระบบไฟที่เปิดปิดอัตโนมัติเมื่อค่ำคืน</p>
+          </div>
+        </div>
+        <h5 style="margin-bottom:8px; color:var(--gold);">🏫 ขั้นตอนการดำเนินกิจกรรม:</h5>
+        <div class="lesson-table-wrap">
+          <table class="mc-table">
+            <thead>
+              <tr>
+                <th>ขั้นตอน</th>
+                <th>เวลา</th>
+                <th>กิจกรรมของครูและนักเรียน</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>ขั้นนำสอนวงจร</strong></td>
+                <td>8 นาที</td>
+                <td>ครูอธิบายสั้นๆ เกี่ยวกับการใช้อุปกรณ์ตรวจจับแสงอาทิตย์ (Daylight Sensor) ร่วมกับการวางสาย Redstone เพื่อเปิดปิดไฟคบเพลิง</td>
+              </tr>
+              <tr>
+                <td><strong>ขั้นปฏิบัติหลังคา/วงจรไฟ</strong></td>
+                <td>35 นาที</td>
+                <td>ก่อกำแพง ปิดช่องหน้าต่าง มุงหลังคาทรงหน้าจั่ว และวางระบบไฟเพดานอัตโนมัติ คู่นักเรียนช่วยเหลือกันและกัน</td>
+              </tr>
+              <tr>
+                <td><strong>ขั้นแก้บั๊ก (Debugging)</strong></td>
+                <td>7 นาที</td>
+                <td>นักเรียนเดินตรวจสอบความสมบูรณ์รอบตัวบ้าน ลบสิ่งก่อสร้างส่วนเกิน และเคลียร์ข้อขัดข้องระบบไฟฟ้า บันทึกผลลงใบงาน 1.3</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- HOUR 5 -->
+      <div id="lesson-h5" class="lesson-detail-card" style="display:none;">
+        <div class="pixel-heading">⏱️ HOUR 5 — HOME TOUR & ASSESSMENT</div>
+        <h4 style="font-size:1.25rem; margin-bottom:16px; color:#fff;">ชั่วโมงที่ 5: การนำเสนอ Home Tour การทดสอบหลังเรียน และสะท้อนคิด</h4>
+        <div class="lesson-grid-meta">
+          <div class="meta-box">
+            <h4>🎯 ทักษะแนวคิดคำนวณ</h4>
+            <p>• <strong>Evaluation & Presentation:</strong> นำเสนอขั้นตอนสร้าง สะท้อนความคิดเห็น และประเมินผลงานผ่านรูบริคส์</p>
+          </div>
+          <div class="meta-box">
+            <h4>📦 สื่อการสอน & อุปกรณ์</h4>
+            <p>• ข้อสอบวัดทักษะ CT 20 ข้อ, ใบงานสะท้อนความคิด 1.4, แบบสอบถามเจตคติ</p>
+          </div>
+          <div class="meta-box">
+            <h4>✅ วิธีการประเมินผล</h4>
+            <p>• คะแนน Post-test (เกณฑ์ผ่าน ≥ 70%), แบบสะท้อนความคิดในใบงาน 1.4, และแบบสังเกตการณ์พหุปัญญา</p>
+          </div>
+        </div>
+        <h5 style="margin-bottom:8px; color:var(--gold);">🏫 ขั้นตอนการดำเนินกิจกรรม:</h5>
+        <div class="lesson-table-wrap">
+          <table class="mc-table">
+            <thead>
+              <tr>
+                <th>ขั้นตอน</th>
+                <th>เวลา</th>
+                <th>กิจกรรมของครูและนักเรียน</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>ขั้นนำเสนอ Home Tour</strong></td>
+                <td>15 นาที</td>
+                <td>สมาชิกกลุ่ม 1 คนนำเดินทัวร์อธิบายขั้นตอนที่ตรงกับปราชญ์ อีกคนไปประเมินให้คะแนนบ้านของกลุ่มอื่นด้วยเกณฑ์ Rubrics</td>
+              </tr>
+              <tr>
+                <td><strong>ขั้นสอบหลังเรียน</strong></td>
+                <td>15 นาที</td>
+                <td>นักเรียนแต่ละคนทำแบบทดสอบทักษะแนวคิดเชิงคำนวณ (Post-test) จำนวน 20 ข้อเพื่อวัดความรู้สะสม</td>
+              </tr>
+              <tr>
+                <td><strong>ขั้นสะท้อนคิด & มอบรางวัล</strong></td>
+                <td>20 นาที</td>
+                <td>เขียนบันทึกใบสะท้อนความคิดในใบงาน 1.4 ร่วมประเมินเจตคติ และมอบรางวัล Master Builder Award เพื่อส่งเสริมความภูมิใจ</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: SCOREBOARD PANEL -->
+    <div id="panel-scoreboard" class="gui-panel">
+      <div class="scoreboard-layout">
+        <!-- Part 1: Interactive Growth Charts -->
+        <div class="scoreboard-summary-grid">
+          <!-- Chart 1 -->
+          <div class="summary-chart-card">
+            <h4>📊 เปรียบเทียบคะแนนทักษะแนวคิดเชิงคำนวณเฉลี่ยรวม (N = 6)</h4>
+            <div class="chart-bar-container">
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar pre" style="height: 36.7%;">
+                  <span class="bar-val">14.71</span>
+                </div>
+                <div class="chart-label">ก่อนเรียน (36.7%)</div>
+              </div>
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar post" style="height: 81.1%;">
+                  <span class="bar-val">32.44</span>
+                </div>
+                <div class="chart-label">หลังเรียน (81.1%)</div>
+              </div>
+            </div>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">
+              คะแนนสะสมพัฒนาการเฉลี่ยเพิ่มขึ้น <strong>+120.53%</strong> อย่างมีนัยสำคัญที่ระดับ .05
+            </p>
+          </div>
+
+          <!-- Chart 2 -->
+          <div class="summary-chart-card">
+            <h4>📊 การประเมินพหุปัญญาตรรกะ-คณิตศาสตร์เฉลี่ย (เต็ม 5)</h4>
+            <div class="chart-bar-container">
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar pre" style="height: 43.4%;">
+                  <span class="bar-val">2.17</span>
+                </div>
+                <div class="chart-label">ก่อนเรียน (43.4%)</div>
+              </div>
+              <div class="chart-bar-wrapper">
+                <div class="chart-bar post" style="height: 91.4%;">
+                  <span class="bar-val">4.57</span>
+                </div>
+                <div class="chart-label">หลังเรียน (91.4%)</div>
+              </div>
+            </div>
+            <p style="font-size:0.8rem; color:var(--text-dim); margin-top:10px;">
+              พฤติกรรมระดับตรรกะและมิติสัมพันธ์เพิ่มขึ้น <strong>+110.60%</strong> (ระดับดีเยี่ยมมากที่สุด)
+            </p>
+          </div>
+        </div>
+
+        <!-- Part 2: Interactive Student Grid -->
+        <div>
+          <div class="pixel-heading">👥 INDIVIDUAL STUDENT STATS — คลิกเลือกข้อมูลนักเรียน</div>
+          <h4 style="margin-bottom:12px; font-size:1.1rem; color:#fff;">ข้อมูลสรุปคะแนนทักษะรายบุคคลของกลุ่มเป้าหมาย (ป.6)</h4>
+          
+          <div class="student-grid" style="margin-bottom:20px;">
+            <div class="student-card active" onclick="showStudentDetail(1, this)">
+              <h5>พัชราภรณ์</h5>
+              <p class="grp">กลุ่ม 1 (บ้านไม้ประหยัดไฟ)</p>
+              <span class="mini-growth">+14 คะแนน (+58.3%)</span>
+            </div>
+            <div class="student-card" onclick="showStudentDetail(2, this)">
+              <h5>สุทธิภัทร</h5>
+              <p class="grp">กลุ่ม 1 (บ้านไม้ประหยัดไฟ)</p>
+              <span class="mini-growth">+24 คะแนน (+240.0%)</span>
+            </div>
+            <div class="student-card" onclick="showStudentDetail(3, this)">
+              <h5>จิดาภา</h5>
+              <p class="grp">กลุ่ม 1 (บ้านไม้ประหยัดไฟ)</p>
+              <span class="mini-growth">+20 คะแนน (+250.0%)</span>
+            </div>
+            <div class="student-card" onclick="showStudentDetail(4, this)">
+              <h5>นภัสสร</h5>
+              <p class="grp">กลุ่ม 2 (บ้านดินระแวดระวัง)</p>
+              <span class="mini-growth">+10 คะแนน (+40.0%)</span>
+            </div>
+            <div class="student-card" onclick="showStudentDetail(5, this)">
+              <h5>จิราภรณ์</h5>
+              <p class="grp">กลุ่ม 2 (บ้านดินระแวดระวัง)</p>
+              <span class="mini-growth">+18 คะแนน (+112.5%)</span>
+            </div>
+            <div class="student-card" onclick="showStudentDetail(6, this)">
+              <h5>สุรสิทธิ์</h5>
+              <p class="grp">กลุ่ม 2 (บ้านดินระแวดระวัง)</p>
+              <span class="mini-growth">+21 คะแนน (+420.0%)</span>
+            </div>
+          </div>
+
+          <!-- Student detail panels -->
+          <!-- ST 1 -->
+          <div id="st-detail-1" class="student-detail-pane active">
+            <h4 style="color:var(--gold); font-size:1.2rem; margin-bottom:12px;">เด็กหญิงพัชราภรณ์ ชะลุนรัมย์</h4>
+            <div class="st-detail-grid">
+              <div>
+                <p><strong>เพศ:</strong> หญิง | <strong>สังกัดกลุ่ม:</strong> กลุ่มที่ 1 (ชิ้นงานบ้านไม้ประหยัดพลังงาน)</p>
+                <p style="margin-top:8px;"><strong>ระดับคุณภาพหลังเรียน:</strong> <span style="color:var(--emerald); font-weight:700;">ดีเยี่ยม (Excellent)</span></p>
+                <p><strong>คะแนนประเมินชิ้นงานกลุ่ม:</strong> 12 / 12 คะแนน (ดีเยี่ยม / ผ่านเกณฑ์)</p>
+              </div>
+              <div>
+                <p><strong>คะแนน Pre-test (ก่อนเรียน):</strong> 24 / 40 คะแนน</p>
+                <div class="progress-track"><div class="progress-fill pre" style="width: 60%;"></div></div>
+                <p style="margin-top:8px;"><strong>คะแนน Post-test (หลังเรียน):</strong> 38 / 40 คะแนน</p>
+                <div class="progress-track"><div class="progress-fill post" style="width: 95%;"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ST 2 -->
+          <div id="st-detail-2" class="student-detail-pane">
+            <h4 style="color:var(--gold); font-size:1.2rem; margin-bottom:12px;">เด็กชายสุทธิภัทร พันธ์เกตุ</h4>
+            <div class="st-detail-grid">
+              <div>
+                <p><strong>เพศ:</strong> ชาย | <strong>สังกัดกลุ่ม:</strong> กลุ่มที่ 1 (ชิ้นงานบ้านไม้ประหยัดพลังงาน)</p>
+                <p style="margin-top:8px;"><strong>ระดับคุณภาพหลังเรียน:</strong> <span style="color:var(--emerald); font-weight:700;">ดีเยี่ยม (Excellent)</span></p>
+                <p><strong>คะแนนประเมินชิ้นงานกลุ่ม:</strong> 12 / 12 คะแนน (ดีเยี่ยม / ผ่านเกณฑ์)</p>
+              </div>
+              <div>
+                <p><strong>คะแนน Pre-test (ก่อนเรียน):</strong> 10 / 40 คะแนน</p>
+                <div class="progress-track"><div class="progress-fill pre" style="width: 25%;"></div></div>
+                <p style="margin-top:8px;"><strong>คะแนน Post-test (หลังเรียน):</strong> 34 / 40 คะแนน</p>
+                <div class="progress-track"><div class="progress-fill post" style="width: 85%;"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ST 3 -->
+          <div id="st-detail-3" class="student-detail-pane">
+            <h4 style="color:var(--gold); font-size:1.2rem; margin-bottom:12px;">เด็กหญิงจิดาภา ทองมา</h4>
+            <div class="st-detail-grid">
+              <div>
+                <p><strong>เพศ:</strong> หญิง | <strong>สังกัดกลุ่ม:</strong> กลุ่มที่ 1 (ชิ้นงานบ้านไม้ประหยัดพลังงาน)</p>
+                <p style="margin-top:8px;"><strong>ระดับคุณภาพหลังเรียน:</strong> <span style="color:var(--emerald); font-weight:700;">ดี (Good)</span></p>
+                <p><strong>คะแนนประเมินชิ้นงานกลุ่ม:</strong> 12 / 12 คะแนน (ดีเยี่ยม / ผ่านเกณฑ์)</p>
+              </div>
+              <div>
+                <p><strong>คะแนน Pre-test (ก่อนเรียน):</strong> 8 / 40 คะแนน</p>
+                <div class="progress-track"><div class="progress-fill pre" style="width: 20%;"></div></div>
+                <p style="margin-top:8px;"><strong>คะแนน Post-test (หลังเรียน):</strong> 28 / 40 คะแนน</p>
+                <div class="progress-track"><div class="progress-fill post" style="width: 70%;"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ST 4 -->
+          <div id="st-detail-4" class="student-detail-pane">
+            <h4 style="color:var(--gold); font-size:1.2rem; margin-bottom:12px;">เด็กหญิงนภัสสร บุญโกมล</h4>
+            <div class="st-detail-grid">
+              <div>
+                <p><strong>เพศ:</strong> หญิง | <strong>สังกัดกลุ่ม:</strong> กลุ่มที่ 2 (ชิ้นงานบ้านดินระแวดระวัง)</p>
+                <p style="margin-top:8px;"><strong>ระดับคุณภาพหลังเรียน:</strong> <span style="color:var(--emerald); font-weight:700;">ดีเยี่ยม (Excellent)</span></p>
+                <p><strong>คะแนนประเมินชิ้นงานกลุ่ม:</strong> 10 / 12 คะแนน (ดี / ผ่านเกณฑ์)</p>
+              </div>
+              <div>
+                <p><strong>คะแนน Pre-test (ก่อนเรียน):</strong> 25 / 40 คะแนน</p>
+                <div class="progress-track"><div class="progress-fill pre" style="width: 62.5%;"></div></div>
+                <p style="margin-top:8px;"><strong>คะแนน Post-test (หลังเรียน):</strong> 35 / 40 คะแนน</p>
+                <div class="progress-track"><div class="progress-fill post" style="width: 87.5%;"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ST 5 -->
+          <div id="st-detail-5" class="student-detail-pane">
+            <h4 style="color:var(--gold); font-size:1.2rem; margin-bottom:12px;">เด็กหญิงจิราภรณ์ ยิ่งชาติ</h4>
+            <div class="st-detail-grid">
+              <div>
+                <p><strong>เพศ:</strong> หญิง | <strong>สังกัดกลุ่ม:</strong> กลุ่มที่ 2 (ชิ้นงานบ้านดินระแวดระวัง)</p>
+                <p style="margin-top:8px;"><strong>ระดับคุณภาพหลังเรียน:</strong> <span style="color:var(--emerald); font-weight:700;">ดีเยี่ยม (Excellent)</span></p>
+                <p><strong>คะแนนประเมินชิ้นงานกลุ่ม:</strong> 10 / 12 คะแนน (ดี / ผ่านเกณฑ์)</p>
+              </div>
+              <div>
+                <p><strong>คะแนน Pre-test (ก่อนเรียน):</strong> 16 / 40 คะแนน</p>
+                <div class="progress-track"><div class="progress-fill pre" style="width: 40%;"></div></div>
+                <p style="margin-top:8px;"><strong>คะแนน Post-test (หลังเรียน):</strong> 34 / 40 คะแนน</p>
+                <div class="progress-track"><div class="progress-fill post" style="width: 85%;"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ST 6 -->
+          <div id="st-detail-6" class="student-detail-pane">
+            <h4 style="color:var(--gold); font-size:1.2rem; margin-bottom:12px;">เด็กชายสุรสิทธิ์ จะริบรัมย์</h4>
+            <div class="st-detail-grid">
+              <div>
+                <p><strong>เพศ:</strong> ชาย | <strong>สังกัดกลุ่ม:</strong> กลุ่มที่ 2 (ชิ้นงานบ้านดินระแวดระวัง)</p>
+                <p style="margin-top:8px;"><strong>ระดับคุณภาพหลังเรียน:</strong> <span style="color:var(--gold); font-weight:700;">พอใช้ (Fair)</span></p>
+                <p><strong>คะแนนประเมินชิ้นงานกลุ่ม:</strong> 10 / 12 คะแนน (ดี / ผ่านเกณฑ์)</p>
+              </div>
+              <div>
+                <p><strong>คะแนน Pre-test (ก่อนเรียน):</strong> 5 / 40 คะแนน</p>
+                <div class="progress-track"><div class="progress-fill pre" style="width: 12.5%;"></div></div>
+                <p style="margin-top:8px;"><strong>คะแนน Post-test (หลังเรียน):</strong> 26 / 40 คะแนน</p>
+                <div class="progress-track"><div class="progress-fill post" style="width: 65%;"></div></div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: INTERACTIVE QUIZ PANEL -->
+    <div id="panel-quiz" class="gui-panel">
+      <div class="quiz-layout">
+        <div class="quiz-meta">
+          <span class="quiz-progress-text" id="quiz-progress">คำถามที่ 1 จาก 8</span>
+          <span class="quiz-score-badge" id="quiz-score">คะแนน: 0/8</span>
+        </div>
+
+        <div class="quiz-card">
+          <div class="quiz-category" id="q-cat">DECOMPOSITION</div>
+          <div class="quiz-question" id="q-text">คำถามจะแสดงผลตรงนี้...</div>
+          <div class="quiz-options" id="q-options">
+            <!-- options generated in JS -->
+          </div>
+          <div class="quiz-explanation" id="q-explanation">
+            <!-- explanation generated in JS -->
+          </div>
+        </div>
+
+        <div class="quiz-actions">
+          <button class="mc-btn grey" id="prev-btn" onclick="prevQuizQuestion()" style="visibility:hidden;">◀ ข้อก่อนหน้า</button>
+          <button class="mc-btn" id="next-btn" onclick="nextQuizQuestion()" disabled>ข้อถัดไป ▶</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: WORKSHEETS PANEL -->
+    <div id="panel-sheets" class="gui-panel">
+      <div class="pixel-heading">📁 STUDENT WORKSHEETS PREVIEW</div>
+      <h3 style="font-size:1.5rem; margin-bottom:16px;">ตัวอย่างใบงานกิจกรรมการเรียนรู้ของนักเรียน</h3>
+      <p style="color:var(--text-dim); margin-bottom:20px;">คลิกที่ใบงานเพื่อเปิดดูตัวอย่างข้อเขียนจริงของนักเรียนประกอบรายงานการวิจัย:</p>
+
+      <div class="sheet-grid">
+        <!-- Sheet 1 -->
+        <div class="sheet-card" onclick="openSheetModal(1)">
+          <h4>📝 ใบงาน 1.1 \"สำรวจและแยกย่อยส่วนประกอบบ้าน\"</h4>
+          <p><strong>ขั้น Gathering (Step 1)</strong> — บันทึกขั้นตอนปราชญ์ช่างก่อสร้าง และระบุรูปทรงวัสดุบล็อกไม้ บล็อกหิน บล็อกเสาเทียบเคียงในเกม</p>
+        </div>
+        <!-- Sheet 2 -->
+        <div class="sheet-card" onclick="openSheetModal(2)">
+          <h4>📝 ใบงาน 1.2 \"Blueprint Designer (พิมพ์เขียว 2D)\"</h4>
+          <p><strong>ขั้น Processing (Step 2)</strong> — ภาพสเก็ตแปลนหน้าตัดฐานรากบ้านสเกล 8x10 บล็อก ลงบนกระดาษกราฟของคู่หู Master Builder</p>
+        </div>
+        <!-- Sheet 3 -->
+        <div class="sheet-card" onclick="openSheetModal(3)">
+          <h4>📝 ใบงาน 1.3 \"Algorithm Builder\"</h4>
+          <p><strong>ขั้น Processing (Step 2)</strong> — ตารางลำดับขั้นตอนคำสั่งตั้งแต่คำสั่งที่ 1 ถึง 8 สำหรับใช้ควบคุมการก่อสร้างให้เป็นขั้นตอน</p>
+        </div>
+        <!-- Sheet 4 -->
+        <div class="sheet-card" onclick="openSheetModal(4)">
+          <h4>📝 ใบงาน 1.4 \"Build & Debug Record\"</h4>
+          <p><strong>ขั้น Applying (Step 3)</strong> — บันทึกบั๊กเชิงเทคนิคที่กลุ่มนักเรียนพบเจอระหว่างวางเสาหรือต่อวงจร Daylight Sensor และบันทึกแนวทางแก้ไข</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF DOWNLOAD BUTTON IN FOOTER -->
+  <div style="display:flex; justify-content:center; margin-top:30px;">
+    <a href="full_report.pdf" class="mc-btn" target="_blank" style="background:#8b6914; box-shadow: inset -3px -3px 0 #6b4f10, inset 3px 3px 0 #bc9862;">
+      💾 ดาวน์โหลดเล่มรายงานฉบับเต็ม (PDF)
+    </a>
+  </div>
+</main>
+
+<!-- WORKSHEETS MODALS -->
+<div class="sheet-modal" id="sheet-modal">
+  <div class="sheet-modal-content">
+    <span class="close-modal" onclick="closeSheetModal()">&times;</span>
+    <h3 style="font-size:1.3rem; color:var(--gold); margin-bottom:10px;" id="modal-sheet-title">ใบงานตัวอย่าง</h3>
+    <p style="color:var(--text-dim); font-size:0.85rem;" id="modal-sheet-desc"></p>
+    
+    <div class="sheet-mock-paper" id="modal-paper-content">
+      <!-- Mock content dynamically filled in JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== TABS CONTROLLER =====
+function switchGuiTab(tabId) {
+  // Tabs toggle
+  document.querySelectorAll('.gui-tab-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.currentTarget.classList.add('active');
+
+  // Panels toggle
+  document.querySelectorAll('.gui-panel').forEach(panel => {
+    panel.classList.remove('active');
+  });
+  document.getElementById('panel-' + tabId).classList.add('active');
+
+  // Trigger anims for charts if scoreboard tab active
+  if (tabId === 'scoreboard') {
+    animateCharts();
+  }
+}
+
+// ===== CHAPTERS CONTROLLER (TAB 1) =====
+function switchChapter(chapNum) {
+  document.querySelectorAll('.chapter-nav-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.currentTarget.classList.add('active');
+
+  document.querySelectorAll('.chapter-content-pane .chapter-section').forEach(sec => {
+    sec.classList.remove('active');
+  });
+  document.getElementById('chapter-' + chapNum).classList.add('active');
+}
+
+// ===== LESSON PLANS HOUR SELECTOR (TAB 2) =====
+function switchLessonHour(hourNum) {
+  document.querySelectorAll('.lesson-time-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.currentTarget.classList.add('active');
+
+  document.querySelectorAll('.lesson-detail-card').forEach(card => {
+    card.style.display = 'none';
+  });
+  document.getElementById('lesson-h' + hourNum).style.display = 'block';
+}
+
+// ===== STUDENT SELECTOR (TAB 3) =====
+function showStudentDetail(stNum, cardEl) {
+  document.querySelectorAll('.student-card').forEach(card => {
+    card.classList.remove('active');
+  });
+  cardEl.classList.add('active');
+
+  document.querySelectorAll('.student-detail-pane').forEach(pane => {
+    pane.classList.remove('active');
+  });
+  document.getElementById('st-detail-' + stNum).classList.add('active');
+}
+
+function animateCharts() {
+  // Small trick to re-trigger transition animation
+  const preBar1 = document.querySelector('.summary-chart-card:nth-child(1) .chart-bar.pre');
+  const postBar1 = document.querySelector('.summary-chart-card:nth-child(1) .chart-bar.post');
+  const preBar2 = document.querySelector('.summary-chart-card:nth-child(2) .chart-bar.pre');
+  const postBar2 = document.querySelector('.summary-chart-card:nth-child(2) .chart-bar.post');
+
+  preBar1.style.height = '0';
+  postBar1.style.height = '0';
+  preBar2.style.height = '0';
+  postBar2.style.height = '0';
+
+  setTimeout(() => {
+    preBar1.style.height = '36.7%';
+    postBar1.style.height = '81.1%';
+    preBar2.style.height = '43.4%';
+    postBar2.style.height = '91.4%';
+  }, 100);
+}
+
+// ===== INTERACTIVE QUIZ DATA & LOGIC (TAB 4) =====
+const quizData = [
+  {
+    category: "DECOMPOSITION (การแยกย่อยปัญหา)",
+    question: "คู่ของนักเรียนได้รับเป้าหมายให้สร้าง 'บ้านไม้ขนาดเล็กอัจฉริยะ' ใน Minecraft ขั้นตอนข้อใดเป็นการใช้แนวทาง Decomposition (การแยกย่อยปัญหา) เพื่อวางแผนงานได้เหมาะสมที่สุด?",
+    options: [
+      "ก) วิ่งหาจุดสร้างและเริ่มทุบหญ้าไปพร้อมๆ กับวางบล็อกโดยทันที",
+      "ข) แยกงานสร้างออกเป็นส่วนย่อย ได้แก่ การปรับพื้นที่รากฐาน ก่อผนัง มุงหลังคา และต่อหลอดไฟ",
+      "ค) คิดค้นโครงร่างทาสีและลวดลายภายในห้องนอนทั้งหมดก่อนออกแบบโครงฐานด้านนอก",
+      "ง) ขอให้ครูแจกตัวบ้านสำเร็จรูปที่มีระบบไฟมาให้เลย"
+    ],
+    correctIdx: 1,
+    explanation: "การแบ่งโครงการใหญ่ออกเป็นส่วนย่อย ได้แก่ งานปรับรากฐาน, โครงผนัง, งานหลังคา, และวงจรไฟฟ้า ทำให้ลดความซับซ้อนและจัดลำดับสเกลการทำงานร่วมกันกับบัดดี้ได้ง่ายขึ้น"
+  },
+  {
+    category: "DECOMPOSITION (การแยกย่อยปัญหา)",
+    question: "ในการก่อสร้างหลังคาทรงหน้าจั่วลาดเอียงในเกม Minecraft สิ่งใดที่เป็นปัญหาย่อยด้านกายภาพที่ควรคิดคำนวณแยกย่อยเป็นอันดับแรกเพื่อไม่ให้หลังคาบิดเบี้ยว?",
+    options: [
+      "ก) การเลือกสกินตัวละครที่ยืนมุงหลังคา",
+      "ข) การระบุความกว้างของตัวบ้านเพื่อหาจุดกึ่งกลาง (ยอดจั่ว) และจำนวนขั้นบันไดที่เอียงขึ้น",
+      "ค) การปรับแต่งความเร็วเมาส์ในการเลื่อนคลิกวางบล็อก",
+      "ง) การขุดสะสมบล็อกหินทรายมาสำรองในกล่องเก็บของ"
+    ],
+    correctIdx: 1,
+    explanation: "ยอดจั่วหลังคาจะอยู่กึ่งกลางบ้านเสมอ ดังนั้นจึงจำเป็นต้องแยกย่อยขนาดความกว้างของขอบกำแพงก่อนเริ่มวางบล็อกบันไดไม้เพื่อให้จั่วมาประกบกันตรงกลางพอดี"
+  },
+  {
+    category: "PATTERN RECOGNITION (การจดจำรูปแบบ)",
+    question: "เมื่อสังเกตผนังบ้านด้านทิศตะวันออกและทิศตะวันตก พบว่ามีขนาดกว้าง 6 บล็อก สูง 4 บล็อก และเจาะช่องหน้าต่างตรงกลางเท่ากันทุกประการ การรู้ข้อจำกัดนี้มีประโยชน์อย่างไรในการก่อสร้างในเกม?",
+    options: [
+      "ก) ไม่ต้องใช้วงจรหลอดไฟ Redstone ทำงาน",
+      "ข) ทำให้สร้างผนังทั้งสองด้านได้ด้วยรูปแบบและคำสั่งวางบล็อกเดียวกัน สะดวกรวดเร็วขึ้น",
+      "ค) ปลดล็อกคำสั่งเปลี่ยนสภาพอากาศในเซิร์ฟเวอร์",
+      "ง) เพิ่มระดับพลังชีวิต HP ของตัวละครนักเรียน"
+    ],
+    correctIdx: 1,
+    explanation: "เมื่อจดจำได้ว่าผนังสองด้านมีรูปแบบ (Pattern) ที่สมมาตรและซ้ำกัน นักเรียนสามารถทำสำเนากระบวนการเดิมเพื่อวางบล็อกอีกด้านหนึ่งได้ทันทีโดยไม่ต้องคำนวณใหม่"
+  },
+  {
+    category: "PATTERN RECOGNITION (การจดจำรูปแบบ)",
+    question: "หากต้องการวางหินปูถนนทางเข้าบ้านโดยใช้ลวดลายแบบ 'บล็อกหินคราฟต์ 2 บล็อก สลับกับบล็อกไม้โอ๊ก 1 บล็อก เสมอ' หากทางเดินนี้ยาว 9 บล็อก จะต้องใช้บล็อกไม้โอ๊กรวมกี่บล็อกตามรูปแบบ?",
+    options: [
+      "ก) 1 บล็อก",
+      "ข) 2 บล็อก",
+      "ค) 3 บล็อก",
+      "ง) 6 บล็อก"
+    ],
+    correctIdx: 2,
+    explanation: "ลวดลายวนซ้ำคือ หิน-หิน-ไม้ รวมเป็น 3 บล็อกต่อหนึ่งรอบ หากทางเดินยาว 9 บล็อก จะวนซ้ำตามรูปแบบนี้ได้ทั้งหมด 3 รอบพอดี (9 หารด้วย 3) ดังนั้นจึงใช้บล็อกไม้โอ๊ก 3 บล็อก"
+  },
+  {
+    category: "ABSTRACTION (การคิดเชิงนามธรรม)",
+    question: "ในการสเก็ตแบบพิมพ์เขียว (Blueprint) ของตัวบ้าน 2 มิติลงในกระดาษกราฟ ข้อมูลใดควรเลือกเขียนและมุ่งเน้นมากที่สุดตามแนวคิด Abstraction?",
+    options: [
+      "ก) การสเก็ตลวดลายของเตียงและทาสีพรมในห้องนอน",
+      "ข) แนวขอบกำแพงบ้าน ขอบเขตเสา และพิกัดระบุตำแหน่งประตูทางเข้า",
+      "ค) สีเครื่องแต่งกายของตัวละครที่ยืนข้างผลงาน",
+      "ง) รูปภาพสัตว์เลี้ยงที่จะเลี้ยงในรั้วสวน"
+    ],
+    correctIdx: 1,
+    explanation: "การคิดเชิงนามธรรมเน้นการดึงข้อมูลหลักที่เป็นโครงสร้างพื้นฐาน (กำแพง เสา ประตู) เพื่อนำไปขึ้นโครงสร้างจริง และละทิ้งรายละเอียดการตกแต่งปลีกย่อยที่ยังไม่จำเป็นในขั้นนี้ออกไป"
+  },
+  {
+    category: "ABSTRACTION (การคิดเชิงนามธรรม)",
+    question: "หากเป้าหมายของวิชาคือการเรียนระบบ 'บ้านประหยัดพลังงานเปิดไฟกลางคืนอัตโนมัติ' ข้อมูลสำคัญระดับตรรกะที่กลุ่มนักเรียนต้องการมุ่งเน้นสอดคล้องกับข้อใด?",
+    options: [
+      "ก) รูปแบบและสีสันของเตียงนอนบล็อกขนแกะ",
+      "ข) โครงการเชื่อมสาย Redstone ระหว่าง Daylight Sensor ไปยังหลอดไฟ",
+      "ค) ชนิดบล็อกกระจกที่นำมาตกแต่งริมระเบียง",
+      "ง) การขุดทำบ่อน้ำเพื่อความสวยงามข้างตัวบ้าน"
+    ],
+    correctIdx: 1,
+    explanation: "แกนหลักของบ้านอัจฉริยะคือวงจรไฟฟ้าที่สามารถตรวจวัดแสงแล้วจ่ายไฟไปที่หลอดไฟได้ การตกแต่งอย่างอื่นจัดเป็นรายละเอียดรองที่ไม่ได้มีส่วนช่วยให้ระบบเปิดปิดไฟทำงานสำเร็จ"
+  },
+  {
+    category: "ALGORITHM DESIGN (การออกแบบขั้นตอนวิธี)",
+    question: "ข้อใดคือการจัดเรียงลำดับอัลกอริทึม (Algorithm) สำหรับการก่อสร้างบ้านใน Minecraft ที่ถูกต้องตามหลักการวิศวกรรมการสร้างจริง?",
+    options: [
+      "ก) มุงหลังคา → วางรากฐานหิน → ก่อกำแพงผนัง → เดินวงจรสายไฟ",
+      "ข) ปรับระดับพื้นที่ → ก่อหินรากฐาน → ตั้งเสาบ้าน → ก่อผนังและหน้าต่าง → มุงหลังคา → วางระบบไฟ",
+      "ค) วางระบบไฟกลางบ้าน → มุงหลังคาลอยฟ้า → วางรากฐานและเสาทีหลังสุด",
+      "ง) สร้างห้องนอนให้ตกแต่งเรียบร้อย → ก่อผนังรอบห้องนอน → ปิดทับด้วยหลังคา"
+    ],
+    correctIdx: 1,
+    explanation: "ลำดับการก่อสร้างที่มีขั้นตอนวิธีที่ดีจะต้องเริ่มสร้างจากล่างขึ้นบนตามขั้นตอนวิศวกรรมจริง: ปรับหน้าดินเพื่อวางรากฐาน, ตั้งเสารับน้ำหนัก, ก่อผนังล้อมรอบ, มุงหลังคาเพื่อปิดยอดตัวบ้าน, และติดตั้งไฟฟ้าส่องสว่างท้ายที่สุด"
+  },
+  {
+    category: "ALGORITHM DESIGN (การออกแบบขั้นตอนวิธี)",
+    question: "ขณะที่เดินสายวงจรไฟในขั้นทดสอบระบบ ปรากฏว่า 'หลอดไฟเพดานไม่ติดเมื่อท้องฟ้ามืดลง' นักเรียนควรดำเนินการตามขั้นตอนอัลกอริทึมในการค้นหาและแก้ไขข้อผิดพลาด (Debugging) อย่างไร?",
+    options: [
+      "ก) ทุบบ้านทิ้งทั้งหมดเพื่อเริ่มต้นสร้างระบบใหม่ตั้งแต่ต้น",
+      "ข) ตรวจสอบทีละจุด: 1. เช็ก Daylight Sensor วางโดนบล็อกบังแสงหรือไม่ -> 2. เช็กสาย Redstone ขาดตอนระหว่างทางหรือไม่ -> 3. เช็กหลอดไฟเสียหรือไม่",
+      "ค) ลบเกม Minecraft ออกจากเครื่องคอมพิวเตอร์และเล่นใหม่",
+      "ง) ยื่นคำร้องขอสอบใบงานถัดไปทันทีโดยไม่ต้องตรวจสอบระบบเดิม"
+    ],
+    correctIdx: 1,
+    explanation: "การ Debugging วงจรไฟฟ้าอย่างเป็นระบบจะต้องตรวจเช็กหาจุดบกพร่องไล่ตามลำดับสัญญาณไฟฟ้า: ตรวจสอบตัวรับสัญญาณ (เซ็นเซอร์), ตรวจสอบตัวนำไฟฟ้า (สาย Redstone), และตรวจสอบตัวแสดงผล (หลอดไฟ) เพื่อจำกัดวงหาปัญหาที่แท้จริง"
+  }
+];
+
+let currentQIdx = 0;
+let userScore = 0;
+let answeredQ = Array(quizData.length).fill(null); // to keep track of answered choices
+
+function loadQuestion(idx) {
+  const q = quizData[idx];
+  document.getElementById('quiz-progress').textContent = `คำถามที่ ${idx + 1} จาก ${quizData.length}`;
+  document.getElementById('q-cat').textContent = q.category;
+  document.getElementById('q-text').textContent = q.question;
+
+  const optionsContainer = document.getElementById('q-options');
+  optionsContainer.innerHTML = '';
+
+  const explanationEl = document.getElementById('q-explanation');
+  explanationEl.style.display = 'none';
+
+  q.options.forEach((opt, oIdx) => {
+    const btn = document.createElement('button');
+    btn.className = 'quiz-opt-btn';
+    btn.textContent = opt;
+    
+    // Check if question was already answered
+    if (answeredQ[idx] !== null) {
+      btn.disabled = true;
+      if (oIdx === q.correctIdx) {
+        btn.classList.add('correct');
+        btn.innerHTML += ' <span>✅ (ถูกต้อง)</span>';
+      } else if (oIdx === answeredQ[idx]) {
+        btn.classList.add('incorrect');
+        btn.innerHTML += ' <span>❌ (คุณตอบข้อนี้)</span>';
+      }
+    } else {
+      btn.onclick = () => selectOption(idx, oIdx);
+    }
+    optionsContainer.appendChild(btn);
+  });
+
+  // Show explanation if already answered
+  if (answeredQ[idx] !== null) {
+    explanationEl.innerHTML = `<strong>คำอธิบาย:</strong> ${q.explanation}`;
+    explanationEl.style.display = 'block';
+  }
+
+  // Update navigation buttons
+  document.getElementById('prev-btn').style.visibility = idx > 0 ? 'visible' : 'hidden';
+  const nextBtn = document.getElementById('next-btn');
+  if (idx === quizData.length - 1) {
+    nextBtn.textContent = 'เสร็จสิ้นการทำข้อสอบ';
+  } else {
+    nextBtn.textContent = 'ข้อถัดไป ▶';
+  }
+  nextBtn.disabled = answeredQ[idx] === null;
+}
+
+function selectOption(qIdx, optIdx) {
+  answeredQ[qIdx] = optIdx;
+  const q = quizData[qIdx];
+  
+  if (optIdx === q.correctIdx) {
+    userScore++;
+    document.getElementById('quiz-score').textContent = `คะแนน: ${userScore}/${quizData.length}`;
+  }
+
+  // Reload current question to apply disabled state and highlight colors
+  loadQuestion(qIdx);
+  document.getElementById('next-btn').disabled = false;
+}
+
+function nextQuizQuestion() {
+  if (currentQIdx < quizData.length - 1) {
+    currentQIdx++;
+    loadQuestion(currentQIdx);
+  } else {
+    alert(`การทำข้อสอบเสร็จสิ้น! คุณได้คะแนนรวม ${userScore} จากทั้งหมด ${quizData.length} คะแนน (${Math.round((userScore/quizData.length)*100)}%)`);
+  }
+}
+
+function prevQuizQuestion() {
+  if (currentQIdx > 0) {
+    currentQIdx--;
+    loadQuestion(currentQIdx);
+  }
+}
+
+// Init quiz on load
+loadQuestion(currentQIdx);
+
+// ===== WORKSHEET MODAL LOGIC (TAB 5) =====
+const sheetData = {
+  1: {
+    title: "ใบงานที่ 1.1: สำรวจและแยกย่อยส่วนประกอบบ้าน",
+    desc: "ตัวอย่างใบงานสะท้อนกระบวนการขั้น Gathering ของคู่ เด็กหญิงพัชราภรณ์ และ เด็กชายสุทธิภัทร",
+    paper: `
+      <h5>📝 ใบกิจกรรมที่ 1.1: สำรวจ &amp; Decomposition</h5>
+      <div class="paper-field">
+        <label>ชื่อผู้บันทึกข้อมูล:</label>
+        <div class="value">ด.ญ.พัชราภรณ์ ชะลุนรัมย์ และ ด.ช.สุทธิภัทร พันธ์เกตุ (ชั้น ป.6)</div>
+      </div>
+      <div class="paper-field">
+        <label>ขั้นตอนหลักก่อสร้างบ้านจริง จากช่างปูน (ปราชญ์ชาวบ้าน):</label>
+        <div class="value">
+          1. ถางป่าเคลียร์เศษดินก้อนหินให้เรียบเสมอกัน<br>
+          2. ขุดหลุมปูนหล่อคอนกรีตวางฐานรากตอม่อเพื่อกันดินทรุด<br>
+          3. ตั้งเสาหลักค้ำบ้าน (เสาเอก เสาโท) รับน้ำหนักคานบน<br>
+          4. ก่ออิฐประสานทำผนังและขอบขอบประตูหน้าต่างล้อมรอบ<br>
+          5. ทำโครงหลังคาและมุงกระเบื้องเพื่อกันแดดกันฝน
+        </div>
+      </div>
+      <div class="paper-field">
+        <label>วัสดุบล็อกใน Minecraft ที่ตรงกับเสาจริงและรากฐานจริง:</label>
+        <div class="value">
+          - บล็อกหินคอบเบิลสโตน (Cobblestone) = หล่อตอม่อฐานรากปูนข้างล่าง<br>
+          - บล็อกไม้โอ๊กดิบ (Oak Log) = เสาเอก/เสาโทของบ้านรับคานบน<br>
+          - บล็อกไม้กระดานโอ๊ก (Oak Planks) = ผนังกำแพงบ้านภายใน<br>
+          - บล็อกกระจกแผ่น (Glass Pane) = กระจกหน้าต่างช่วยระบายแสง
+        </div>
+      </div>
+    `
+  },
+  2: {
+    title: "ใบงานที่ 1.2: Blueprint Designer (พิมพ์เขียว 2D)",
+    desc: "แบบร่างตารางพิกัดบ้านขนาด 8x10 บล็อก ลงบนกระดาษกราฟของนักเรียนกลุ่มที่ 2",
+    paper: `
+      <h5>📝 Blueprint Designer (แบบแปลน 2 มิติ)</h5>
+      <div class="paper-field">
+        <label>ชื่อผู้บันทึกข้อมูล:</label>
+        <div class="value">ด.ญ.นภัสสร บุญโกมล และ ด.ญ.จิราภรณ์ ยิ่งชาติ</div>
+      </div>
+      <div class="paper-field">
+        <label>การวางสัดส่วนขนาดพื้นที่และตำแหน่งจุดสำคัญ (กว้าง 8 x ยาว 10 บล็อก):</label>
+        <div class="value">
+          - มุมเสาเอก: พิกัด (X=10, Z=10) ถึง (X=17, Z=19)<br>
+          - แนวประตูหน้าบ้าน: กึ่งกลางผนังแคบหน้าบ้าน (กว้าง 8 บล็อก) = จุดที่ 4 และ 5 ของแกน X<br>
+          - ตำแหน่งวางสวิตช์ตรวจจับแสง (Daylight Sensor): กลางแผ่นหลังคาบ้านเพดานสูง (X=13, Z=14)<br>
+          - เสาเข็มมุมบ้าน: เสาตอม่อไม้โอ๊กแทรก 4 มุม เพื่อให้สัดส่วนตารางลงตัวสมดุล
+        </div>
+      </div>
+      <div class="paper-field">
+        <label>ข้อมูลหลักที่มุ่งเน้น (Abstraction):</label>
+        <div class="value">
+          เน้นเขียนกรอบผนังหนา 1 บล็อก, มุมเสาตอม่อ, ช่องเปิดประตู 2 บล็อก และไม่วาดรายละเอียดเฟอร์นิเจอร์ข้างใน เพื่อประหยัดระยะเวลาตอนก่อสร้างจริง
+        </div>
+      </div>
+    `
+  },
+  3: {
+    title: "ใบงานที่ 1.3: Algorithm Builder",
+    desc: "ตารางสรุปลำดับชุดคำสั่งควบคุมการต่อบล็อก เพื่อแจกจ่ายหน้าที่สร้างให้ตรงกระบวนการ",
+    paper: `
+      <h5>📝 Algorithm Builder (ข้อเขียนลำดับขั้นตอน)</h5>
+      <div class="paper-field">
+        <label>ชื่อผู้บันทึกข้อมูล:</label>
+        <div class="value">ด.ช.สุรสิทธิ์ จะริบรัมย์ (กลุ่ม 2)</div>
+      </div>
+      <div class="paper-field">
+        <label>ชุดคำสั่งคำนวณก่อสร้าง (Algorithm 8 ขั้นตอน):</label>
+        <div class="value">
+          1. [ขุดดิน] เคลียร์บล็อกหญ้าลึก 1 บล็อก ในขอบเขต 8x10 ช่อง<br>
+          2. [วางรากฐาน] เติมบล็อกหิน Cobblestone ให้เต็มหลุม<br>
+          3. [ตั้งเสา] ต่อบล็อกเสาไม้ Oak Log สูงขึ้น 4 บล็อก ในตำแหน่ง 4 มุมหลักของรากฐาน<br>
+          4. [ก่อผนัง] เชื่อมบล็อกไม้กระดาน Oak Planks ระหว่างเสา ปล่อยช่องว่างประตู X=2 และช่องหน้าต่าง X=4 สูงระดับตา<br>
+          5. [คานบน] วางไม้ Oak Log เชื่อมหัวเสาทั้ง 4 ด้านให้เรียบร้อย<br>
+          6. [หลังคา] วางบล็อกบันไดไม้ Oak Stairs ขึ้นไล่ระดับเอียงขึ้นสองด้านให้ชนกันตรงกลางจั่ว<br>
+          7. [ไฟอัจฉริยะ] วาง Daylight Sensor บนยอดจั่วหลังคาและเชื่อมสาย Redstone ลงล่างเจาะเพดานเข้าหลอดไฟ Redstone Lamp<br>
+          8. [ทดสอบ] ปรับเวลาในเกมเป็นเที่ยงคืน (/time set night) ตรวจว่าหลอดไฟสว่างอัตโนมัติหรือไม่
+        </div>
+      </div>
+    `
+  },
+  4: {
+    title: "ใบงานที่ 1.4: Build & Debug Record",
+    desc: "การบันทึกรายการปัญหาและการแก้ไขข้อผิดพลาดเชิงโครงสร้าง (Debugging) ระหว่างการสร้างในเซิร์ฟเวอร์",
+    paper: `
+      <h5>📝 Build &amp; Debug Record (แบบบันทึกการประเมินและแก้บั๊ก)</h5>
+      <div class="paper-field">
+        <label>ชื่อผู้บันทึกข้อมูล:</label>
+        <div class="value">กลุ่มที่ 1 (บ้านไม้ประหยัดพลังงาน)</div>
+      </div>
+      <div class="paper-field">
+        <label>รายการ Bug / ข้อผิดพลาดเชิงตรรกะที่ตรวจพบ:</label>
+        <div class="value">
+          <strong>ปัญหา:</strong> ปรับตั้งค่าเวลาเป็นกลางคืนแล้ว หลอดไฟเพดานไม่ยอมติดสว่าง<br>
+          <strong>สาเหตุที่ตรวจพบ (วิเคราะห์):</strong> ลืมเชื่อมผงสายไฟ Redstone จากยอดเซ็นเซอร์ด้านนอกให้ทะลุหลังคาลงมาหาขั้วหลอดไฟด้านในบ้าน ทำให้สัญญาณไปไม่ถึง<br>
+          <strong>การแก้บั๊ก (Debugging):</strong> ทำการทุบบล็อกไม้หลังคาออก 1 ช่อง วางผง Redstone ลากผ่านตัวบล็อกเชื่อมลงไปถึงหัวหลอดไฟโดยตรง จากนั้นปิดหลังคาทับ
+        </div>
+      </div>
+      <div class="paper-field">
+        <label>ปัญหาเชิงเทคนิคคอมพิวเตอร์:</label>
+        <div class="value">
+          <strong>ปัญหา:</strong> หน้าจอเกมกระตุกและแล็กบ่อยครั้งเมื่อเพื่อนล็อกอินเข้ามาพร้อมกัน<br>
+          <strong>การแก้ไข:</strong> แจ้งครูผู้คุมเพื่อขอปรับลดระยะการแสดงผล Render Distance จากเดิม 12 chunks เหลือเพียง 8 chunks และปิดการจำลอง Fancy Graphics ในเมนู Option ทำให้เกมไหลลื่นขึ้นทันที
+        </div>
+      </div>
+    `
+  }
+};
+
+function openSheetModal(sheetId) {
+  const data = sheetData[sheetId];
+  document.getElementById('modal-sheet-title').textContent = data.title;
+  document.getElementById('modal-sheet-desc').textContent = data.desc;
+  document.getElementById('modal-paper-content').innerHTML = data.paper;
+  document.getElementById('sheet-modal').style.display = 'flex';
+}
+
+function closeSheetModal() {
+  document.getElementById('sheet-modal').style.display = 'none';
+}
+
+// Close modal when clicking outside content
+window.onclick = function(event) {
+  const modal = document.getElementById('sheet-modal');
+  if (event.target === modal) {
+    modal.style.display = 'none';
+  }
+}
+</script>
+
+</body>
+</html>
