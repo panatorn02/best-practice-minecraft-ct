@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>หน้าปกหน้า-หลัง: Minecraft Best Practice Portfolio (Print Edition)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800;900&family=VT323&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --mc-border-dark: #333333;
+      --mc-gui-bg: #f5f5f5; /* Light grey instead of dark grey */
+      --mc-panel-bg: #ffffff; /* White background inside panels for printing */
+      --mc-green: #4e7a2e; /* Darker green for higher contrast */
+      --mc-green-light: #5d9b3e;
+      --mc-gold: #c69200; /* Darker gold/orange for readability on light backgrounds */
+      --mc-diamond: #1b8a7d; /* Darker diamond cyan */
+      --mc-redstone: #9e1a1a; /* Darker red */
+      --mc-wood: #5e3f20;
+      
+      --text-dark: #111111; /* Strong dark text for maximum print contrast */
+      --text-muted: #444444;
+    }
+
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      font-family: 'Prompt', sans-serif;
+      background-color: #ddd;
+      color: var(--text-dark);
+      padding: 20px 0;
+    }
+
+    /* A4 Page Container (Minecraft Light GUI Grid) */
+    .a4-page {
+      width: 210mm;
+      height: 297mm;
+      margin: 0 auto 30px auto;
+      background-color: #ffffff;
+      background-image: 
+        linear-gradient(to right, #f2f2f2 2px, transparent 2px),
+        linear-gradient(to bottom, #f2f2f2 2px, transparent 2px);
+      background-size: 24px 24px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 6px solid var(--mc-border-dark);
+      box-shadow: inset -6px -6px 0px #e0e0e0, inset 6px 6px 0px #ffffff, 0 10px 30px rgba(0,0,0,0.15);
+      padding: 20mm 18mm;
+      box-sizing: border-box;
+    }
+
+    /* Print settings */
+    @media print {
+      body {
+        background: none;
+        padding: 0;
+      }
+      .a4-page {
+        margin: 0;
+        box-shadow: none;
+        page-break-after: always;
+      }
+      .a4-page:last-child {
+        page-break-after: avoid;
+      }
+    }
+
+    /* Decorative Grass border top */
+    .top-grass-border {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 20px;
+      background: var(--mc-green);
+      border-bottom: 5px solid var(--mc-green-light);
+      z-index: 10;
+    }
+
+    /* Header Award Badge */
+    .badge-container {
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .badge-label {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 800;
+      color: #ffffff;
+      background: var(--mc-green);
+      padding: 8px 20px;
+      border: 3px solid var(--mc-border-dark);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Main Title Section - High Contrast */
+    .title-section {
+      text-align: center;
+      margin-top: 25px;
+    }
+
+    .title-section h1 {
+      font-size: 28px;
+      font-weight: 900;
+      color: #ffffff;
+      background: var(--mc-wood);
+      padding: 24px 16px;
+      border: 4px solid var(--mc-border-dark);
+      text-shadow: 2px 2px 0px #111;
+      line-height: 1.4;
+      box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+    }
+
+    .title-section h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--mc-green);
+      margin-top: 15px;
+      line-height: 1.5;
+    }
+
+    /* Center Graphic Panel */
+    .center-graphic-panel {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 20px 0;
+      position: relative;
+    }
+
+    /* 3-Slot Minecraft Item Frame Gallery (GPAS Steps Showcase) */
+    .cover-gallery {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 560px;
+      margin: 15px 0;
+    }
+    
+    .gallery-slot {
+      flex: 1;
+      height: 155px;
+      background: #fafafa;
+      border: 4px solid var(--mc-wood);
+      box-shadow: inset -3px -3px 0px #4a331c, inset 3px 3px 0px #a27c54, 4px 4px 0px rgba(0,0,0,0.05);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
+    .gallery-slot img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-bottom: 2px solid var(--mc-wood);
+      image-rendering: auto;
+    }
+    
+    .slot-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-dark);
+      text-align: center;
+      background: #ffffff;
+      padding: 4px 0;
+      font-family: 'Prompt', sans-serif;
+    }
+
+    /* Presenter Info Details Box (Light Theme) */
+    .info-panel {
+      background: #fafafa;
+      border: 4px solid var(--mc-border-dark);
+      padding: 22px 28px;
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+      box-shadow: 4px 4px 0px rgba(0,0,0,0.05);
+    }
+
+    .info-row {
+      display: flex;
+      margin-bottom: 12px;
+      font-size: 15px; /* Increased for easy reading */
+      line-height: 1.5;
+      border-bottom: 1px dashed #ddd;
+      padding-bottom: 8px;
+    }
+
+    .info-row:last-child {
+      margin-bottom: 0;
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .info-label {
+      font-weight: 800;
+      color: var(--mc-wood);
+      width: 120px;
+      flex-shrink: 0;
+    }
+
+    .info-val {
+      color: var(--text-dark);
+      font-weight: 600;
+    }
+
+    /* Footer decoration strip */
+    .cover-footer-decor {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 25px;
+      border-top: 3px solid var(--mc-border-dark);
+      padding-top: 15px;
+    }
+
+    .block-indicator {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--mc-border-dark);
+    }
+    .block-indicator.grass { background: var(--mc-green); border-top: 5px solid var(--mc-green-light); }
+    .block-indicator.diamond { background: #4aedd9; }
+    .block-indicator.redstone { background: #ff3333; }
+    .block-indicator.gold { background: #ffd700; }
+    .block-indicator.wood { background: var(--mc-wood); }
+
+    /* ========== BACK COVER ========== */
+    .back-cover-content {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .pixel-heart {
+      font-size: 56px;
+      color: var(--mc-redstone);
+      margin-bottom: 25px;
+    }
+
+    .back-cover-text {
+      max-width: 480px;
+      margin-bottom: 40px;
+    }
+
+    .back-cover-text h3 {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--mc-wood);
+      margin-bottom: 16px;
+    }
+
+    .back-cover-text p {
+      font-size: 16px; /* Increased from 14.5px */
+      color: var(--text-dark);
+      line-height: 1.8;
+      font-weight: 500;
+    }
+
+    .closing-badge {
+      font-size: 22px; /* Increased from 18px */
+      font-weight: 900;
+      color: #ffffff;
+      background: var(--mc-green);
+      padding: 12px 36px;
+      border: 3px solid var(--mc-border-dark);
+      box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+    }
+
+    .contact-info-box {
+      background: #fafafa;
+      border: 3px solid var(--mc-border-dark);
+      padding: 16px 24px;
+      margin-top: 40px;
+      font-size: 14px; /* Increased from 12.5px */
+      line-height: 1.6;
+      color: var(--text-dark);
+      font-weight: 600;
+      box-shadow: 4px 4px 0px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- FRONT COVER PAGE -->
+  <div class="a4-page">
+    <div class="top-grass-border"></div>
+
+    <div class="badge-container">
+      <span class="badge-label" style="font-size: 15px; padding: 8px 18px; font-weight: 800; letter-spacing: 0.5px;">ทักษะชีวิตและการคิดคำนวณศตวรรษที่ 21</span>
+    </div>
+
+    <div class="title-section">
+      <h1 style="font-size: 32px; padding: 24px 20px;">การพัฒนาพหุปัญญาและแนวคิดเชิงคำนวณผ่าน Minecraft<br>ด้วยกระบวนการ GPAS 5 Steps</h1>
+      <h2 style="font-size: 20px; font-weight: 800;">นวัตกรรมแนวปฏิบัติที่เป็นเลิศ เพื่อยกระดับการจัดการเรียนรู้วิทยาการคำนวณ ระดับชั้นประถมศึกษาปีที่ 6</h2>
+    </div>
+
+    <div class="center-graphic-panel">
+      <!-- 3-Slot Minecraft Item Frame Gallery (GPAS Steps Showcase) -->
+      <div class="cover-gallery">
+        <div class="gallery-slot">
+          <img src="planning.jpg" alt="ขั้นวางแผน">
+          <div class="slot-label">1. วางแผนพิมพ์เขียว</div>
+        </div>
+        <div class="gallery-slot">
+          <img src="minecraft.jpg" alt="ขั้นลงมือสร้าง">
+          <div class="slot-label">2. ลงมือสร้างจริง</div>
+        </div>
+        <div class="gallery-slot">
+          <img src="presenting1.jpg" alt="ขั้นนำเสนอ">
+          <div class="slot-label">3. นำเสนอสะท้อนคิด</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Presenter Info details card (Light theme for clean print) -->
+    <div class="info-panel">
+      <div class="info-row">
+        <div class="info-label">ผู้เสนอผลงาน:</div>
+        <div class="info-val">นายภาณธร ภรธนบูรณ์</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">ตำแหน่ง:</div>
+        <div class="info-val">ครู</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">โรงเรียน:</div>
+        <div class="info-val">โรงเรียนวัดบ้านรุน</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">สังกัด:</div>
+        <div class="info-val">สำนักงานเขตพื้นที่การศึกษาประถมศึกษาบุรีรัมย์ เขต 1</div>
+      </div>
+    </div>
+
+    <!-- Bottom block strip border -->
+    <div class="cover-footer-decor">
+      <span class="block-indicator grass"></span>
+      <span class="block-indicator diamond"></span>
+      <span class="block-indicator redstone"></span>
+      <span class="block-indicator gold"></span>
+      <span class="block-indicator wood"></span>
+    </div>
+  </div>
+
+  <!-- BACK COVER PAGE -->
+  <div class="a4-page">
+    <div class="top-grass-border"></div>
+
+    <div class="back-cover-content">
+      <!-- Steve Image replaces Heart -->
+      <div style="margin-bottom: 25px;">
+        <img src="steve.png" alt="Steve" style="height: 120px; image-rendering: pixelated;">
+      </div>
+      
+      <div class="back-cover-text">
+        <h3>"Learning is an Adventure."</h3>
+        <p>
+          นวัตกรรมการศึกษาชิ้นนี้มุ่งหวังให้ผู้เรียนสนุกสนานไปกับการแก้ปัญหาและเกิดตรรกะกระบวนการคิดอย่างเป็นระบบ ผ่านกิจกรรมการเรียนรู้แบบ Active Learning ในโลกบล็อกสี่เหลี่ยมของ Minecraft
+        </p>
+      </div>
+
+      <div class="closing-badge">THANK YOU FOR PLAYING!</div>
+
+      <div class="contact-info-box">
+        <strong>โรงเรียนวัดบ้านรุน</strong><br>
+        สำนักงานเขตพื้นที่การศึกษาประถมศึกษาบุรีรัมย์ เขต 1<br>
+        กระทรวงศึกษาธิการ
+      </div>
+    </div>
+
+    <div class="cover-footer-decor">
+      <span class="block-indicator grass"></span>
+      <span class="block-indicator diamond"></span>
+      <span class="block-indicator redstone"></span>
+      <span class="block-indicator gold"></span>
+      <span class="block-indicator wood"></span>
+    </div>
+  </div>
+
+</body>
+</html>
